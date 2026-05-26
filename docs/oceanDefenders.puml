@@ -1,0 +1,390 @@
+@startuml oceanDefenders
+class Usuario
+class Juego
+class Submarino
+class BarraOxigeno
+class Arrecife
+class BarreraCoral
+class EstadoBarrera
+class Enemigo
+class Medusa
+class Calamar
+class Cangrejo
+class Jefe
+class PulpoLeviatan
+
+class Proyectil
+class Torpedo
+class ProyectilEnemigo
+class ProyectilMedusa
+class ProyectilCalamar
+class ProyectilCangrejo
+class ProyectilJefe
+
+class Recolectable
+class PowerUp
+class DobleDisparo
+class VelocidadAumentada
+class SuministroOxigeno
+class BurbujaOxigeno
+
+class Ronda
+class InvasionInicial
+class OleadaReforzada
+class AsaltoMasivo
+class RondaJefe
+
+class Puntaje
+class EstadoJuego
+class Posicion
+class Velocidad
+class CadenciaDisparo
+class Duracion
+class Tiempo
+class Vida
+class DanoOxigeno
+class DanoVida
+class RecuperacionOxigeno
+class ProbabilidadPowerUp
+class FaseJefe
+class Temporizador
+
+Enemigo <|-- Medusa
+Enemigo <|-- Calamar
+Enemigo <|-- Cangrejo
+Enemigo <|-- Jefe
+Jefe <|-- PulpoLeviatan
+
+Proyectil <|-- Torpedo
+Proyectil <|-- ProyectilEnemigo
+ProyectilEnemigo <|-- ProyectilMedusa
+ProyectilEnemigo <|-- ProyectilCalamar
+ProyectilEnemigo <|-- ProyectilCangrejo
+ProyectilEnemigo <|-- ProyectilJefe
+
+Recolectable <|-- PowerUp
+Recolectable <|-- BurbujaOxigeno
+PowerUp <|-- DobleDisparo
+PowerUp <|-- VelocidadAumentada
+PowerUp <|-- SuministroOxigeno
+
+Ronda <|-- InvasionInicial
+Ronda <|-- OleadaReforzada
+Ronda <|-- AsaltoMasivo
+Ronda <|-- RondaJefe
+
+Usuario "1" o-- "1" Juego
+Usuario "1" o-- "1" Submarino
+
+Juego "1" *-- "1" Submarino
+Juego "1" *-- "1" Arrecife
+Juego "1" *-- "4" BarreraCoral
+Juego "1" *-- "4" Ronda
+Juego "1" *-- "1" Puntaje
+Juego "1" *-- "1" EstadoJuego
+Juego "1" *-- "1" Temporizador
+
+Juego "1" o-- "0..*" Proyectil
+Juego "1" o-- "0..*" Recolectable
+
+Submarino "1" *-- "1" BarraOxigeno
+Submarino "1" *-- "1" Posicion
+Submarino "1" *-- "1" Velocidad
+Submarino "1" *-- "1" CadenciaDisparo
+
+Submarino "1" o-- "0..*" Enemigo
+Submarino "1" o-- "0..1" Jefe
+Submarino "1" o-- "0..*" Torpedo
+Submarino "1" o-- "0..*" PowerUp
+Submarino "1" o-- "0..*" BurbujaOxigeno
+Submarino "1" o-- "0..4" BarreraCoral
+
+Arrecife "1" *-- "1" Vida
+Arrecife "1" *-- "1" Posicion
+
+BarreraCoral "1" *-- "1" Vida
+BarreraCoral "1" *-- "1" Posicion
+BarreraCoral "1" *-- "1" EstadoBarrera
+
+Enemigo "1" *-- "1" Vida
+Enemigo "1" *-- "1" DanoOxigeno
+Enemigo "1" *-- "1" Velocidad
+Enemigo "1" *-- "1" CadenciaDisparo
+Enemigo "1" *-- "1" Posicion
+Enemigo "1" *-- "1" ProbabilidadPowerUp
+
+Enemigo "0..*" o-- "0..*" ProyectilEnemigo
+Enemigo "0..*" o-- "0..1" PowerUp
+
+PulpoLeviatan "1" *-- "1" FaseJefe
+PulpoLeviatan "1" o-- "0..*" ProyectilJefe
+PulpoLeviatan "1" o-- "0..*" PowerUp
+
+Proyectil "1" *-- "1" DanoVida
+Proyectil "1" *-- "1" Posicion
+Proyectil "1" *-- "1" Velocidad
+
+ProyectilEnemigo "1" *-- "1" DanoOxigeno
+ProyectilEnemigo "0..*" o-- "1" Submarino
+ProyectilEnemigo "0..*" o-- "1" Arrecife
+
+Proyectil "0..*" o-- "0..4" BarreraCoral
+Torpedo "0..*" o-- "0..*" Enemigo
+Torpedo "0..*" o-- "0..1" Jefe
+Torpedo "0..*" o-- "0..4" BarreraCoral
+
+Recolectable "1" *-- "1" Posicion
+PowerUp "1" *-- "1" Duracion
+SuministroOxigeno "1" *-- "1" RecuperacionOxigeno
+BurbujaOxigeno "1" *-- "1" RecuperacionOxigeno
+
+Ronda "1" *-- "1" Velocidad
+Temporizador "1" *-- "1" Tiempo
+
+InvasionInicial "1" *-- "6" Medusa
+InvasionInicial "1" *-- "6" Calamar
+InvasionInicial "1" *-- "3" Cangrejo
+
+OleadaReforzada "1" *-- "5" Medusa
+OleadaReforzada "1" *-- "7" Calamar
+OleadaReforzada "1" *-- "6" Cangrejo
+
+AsaltoMasivo "1" *-- "4" Medusa
+AsaltoMasivo "1" *-- "8" Calamar
+AsaltoMasivo "1" *-- "9" Cangrejo
+
+RondaJefe "1" *-- "1" PulpoLeviatan
+
+class Juego {
+    - Submarino submarino
+    - Arrecife arrecife
+    - BarreraCoral barreras[4]
+    - Ronda rondas[4]
+    - Puntaje puntaje
+    - EstadoJuego estadoJuego
+    - Temporizador temporizador
+    + Iniciar()
+    + Actualizar()
+    + Dibujar()
+    + CambiarRonda()
+    + VerificarVictoria() : EstadoJuego
+    + VerificarDerrota() : EstadoJuego
+}
+
+class Submarino {
+    - BarraOxigeno barraOxigeno
+    - Posicion posicion
+    - Velocidad velocidad
+    - CadenciaDisparo cadenciaDisparo
+    + MoverIzquierda()
+    + MoverDerecha()
+    + Disparar() : Torpedo
+    + RecibirDano(Enemigo)
+    + ConsumirOxigeno(Tiempo)
+    + RegenerarOxigeno(Recolectable)
+    + AplicarPowerUp(PowerUp)
+}
+
+class Arrecife {
+    - Vida vida
+    - Posicion posicion
+    + RecibirImpacto(ProyectilEnemigo)
+    + EstaDestruido() : EstadoJuego
+}
+
+class BarreraCoral {
+    - Vida vida
+    - Posicion posicion
+    - EstadoBarrera estadoBarrera
+    + RecibirImpacto(Proyectil)
+    + BloquearProyectil(Proyectil)
+    + ActualizarEstado() : EstadoBarrera
+    + EstaDestruida() : EstadoJuego
+}
+
+class Enemigo {
+    - Vida vida
+    - DanoOxigeno danoOxigeno
+    - Velocidad velocidad
+    - CadenciaDisparo cadenciaDisparo
+    - Posicion posicion
+    - ProbabilidadPowerUp probabilidadPowerUp
+    + MoverFormacion()
+    + DescenderFila()
+    + Disparar() : ProyectilEnemigo
+    + RecibirDano(Torpedo)
+    + SoltarPowerUp() : PowerUp
+    + EstaDestruido() : EstadoJuego
+}
+
+class Jefe {
+    + ActivarFase()
+    + DispararRafaga() : ProyectilJefe
+    + LanzarPowerUp() : PowerUp
+}
+
+class PulpoLeviatan {
+    - FaseJefe faseJefe
+    + MoverErratico()
+}
+
+class Proyectil {
+    - DanoVida danoVida
+    - Posicion posicion
+    - Velocidad velocidad
+    + Mover()
+    + Impactar()
+}
+
+class Torpedo {
+    + ImpactarEnemigo(Enemigo)
+    + ImpactarBarrera(BarreraCoral)
+}
+
+class ProyectilEnemigo {
+    - DanoOxigeno danoOxigeno
+    + ImpactarSubmarino(Submarino)
+    + ImpactarArrecife(Arrecife)
+    + ImpactarBarrera(BarreraCoral)
+}
+
+class Recolectable {
+    - Posicion posicion
+    + Caer()
+    + Recolectar(Submarino)
+}
+
+class PowerUp {
+    - Duracion duracion
+    + Activar(Submarino)
+    + Expirar()
+}
+
+class SuministroOxigeno {
+    - RecuperacionOxigeno recuperacionOxigeno
+}
+
+class BurbujaOxigeno {
+    - RecuperacionOxigeno recuperacionOxigeno
+    + Desaparecer()
+}
+
+class Ronda {
+    - Velocidad velocidad
+}
+
+class Temporizador {
+    - Tiempo tiempo
+}
+
+note right of Submarino
+Movimiento horizontal.
+Dispara torpedos hacia arriba.
+Cadencia: 1 torpedo cada 0.5 segundos.
+No tiene vidas: depende de oxígeno.
+end note
+
+note right of BarraOxigeno
+Oxígeno inicial: 100 puntos.
+Pérdida pasiva: -2 cada 5 segundos.
+Si llega a 0, el jugador pierde.
+end note
+
+note right of Arrecife
+Vida inicial: 150 puntos.
+No se regenera entre rondas.
+Si llega a 0, el jugador pierde.
+end note
+
+note right of BarreraCoral
+Cantidad: 4 barreras.
+Vida inicial: 40 puntos.
+Cada impacto causa -5 puntos.
+No se regeneran entre rondas.
+end note
+
+note right of EstadoBarrera
+40-30 HP: Coral intacto.
+29-15 HP: Coral agrietado.
+14-1 HP: Coral fracturado.
+0 HP: Destruido.
+end note
+
+note right of Medusa
+Vida: 10 HP.
+Daño jugador: -10 oxígeno.
+Velocidad: rápida.
+Disparo: cada 3 segundos.
+end note
+
+note right of Calamar
+Vida: 20 HP.
+Daño jugador: -15 oxígeno.
+Velocidad: media.
+Disparo: cada 2.5 segundos.
+end note
+
+note right of Cangrejo
+Vida: 30 HP.
+Daño jugador: -20 oxígeno.
+Velocidad: lenta.
+Disparo: cada 2 segundos.
+end note
+
+note right of PulpoLeviatan
+Vida: 200 HP.
+Daño: -25 oxígeno.
+Fase 1: disparos rectos.
+Fase 2: ráfagas de 3 proyectiles.
+Aparece en ronda 4.
+end note
+
+note right of DobleDisparo
+Dispara 2 torpedos simultáneamente.
+Duración: 10 segundos.
+end note
+
+note right of VelocidadAumentada
+Aumenta movimiento 50%.
+Duración: 5 segundos.
+end note
+
+note right of SuministroOxigeno
+Restaura 30 puntos de oxígeno.
+Efecto instantáneo.
+end note
+
+note right of BurbujaOxigeno
+Aparece cada 15 segundos.
+Restaura 15 puntos de oxígeno.
+Cae lentamente y desaparece al fondo.
+end note
+
+note right of InvasionInicial
+Ronda 1.
+15 enemigos.
+Velocidad normal.
+Oxígeno se regenera al terminar.
+end note
+
+note right of OleadaReforzada
+Ronda 2.
+18 enemigos.
+Velocidad 25% mayor.
+Oxígeno se regenera al terminar.
+end note
+
+note right of AsaltoMasivo
+Ronda 3.
+21 enemigos.
+Velocidad 50% mayor.
+Oxígeno se regenera al terminar.
+end note
+
+note right of RondaJefe
+Ronda 4.
+Jefe final: PulpoLeviatan.
+Condición de victoria: derrotar al jefe.
+Oxígeno se regenera al comenzar.
+end note
+@enduml

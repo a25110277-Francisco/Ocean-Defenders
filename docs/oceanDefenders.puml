@@ -290,7 +290,7 @@ Si llega a 0, el jugador pierde.
 end note
 
 note right of Arrecife
-Vida inicial: 150 puntos.
+Vida inicial: 300 puntos.
 No se regenera entre rondas.
 Si llega a 0, el jugador pierde.
 end note

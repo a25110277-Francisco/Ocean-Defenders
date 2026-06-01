@@ -8,7 +8,7 @@
 
 class Arrecife {
 public:
-    Arrecife() : vida(150), posicion(80.0f, 662.0f) {}
+    Arrecife() : vida(300), posicion(80.0f, 662.0f) {}
 
     void RecibirImpacto(const ProyectilEnemigo& proyectil) {
         vida.RecibirDano(proyectil.ObtenerDanoVida());

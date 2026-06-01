@@ -525,7 +525,7 @@ private:
         DibujarBarra({24.0f, 48.0f}, {190.0f, 16.0f}, arrecife.ObtenerVida().ObtenerPorcentaje(), sf::Color(80, 220, 150));
 
         DibujarTexto("Oxigeno " + std::to_string(submarino.ObtenerBarraOxigeno().ObtenerActual()) + "/100", {225.0f, 11.0f}, 16);
-        DibujarTexto("Arrecife " + std::to_string(arrecife.ObtenerVida().ObtenerActual()) + "/300", {225.0f, 41.0f}, 16);
+        DibujarTexto("Arrecife " + std::to_string(arrecife.ObtenerVida().ObtenerActual()) + "/1000", {225.0f, 41.0f}, 16);
         DibujarTexto("Puntaje " + std::to_string(puntaje.ObtenerValor()), {475.0f, 18.0f}, 18);
         DibujarTexto("Ronda " + std::to_string(rondas[rondaActual]->ObtenerNumero()) + ": " + rondas[rondaActual]->ObtenerNombre(), {475.0f, 44.0f}, 16);
     }

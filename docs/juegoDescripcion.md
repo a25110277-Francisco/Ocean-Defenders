@@ -52,7 +52,7 @@ El juego termina si:
 
 ## **ARRECIFE (Base del Jugador)** 
 
-- **Vida inicial:** 300 puntos 
+- **Vida inicial:** 1000 puntos 
 
 - **Ubicación:** Parte inferior de la pantalla, detrás del jugador 
 

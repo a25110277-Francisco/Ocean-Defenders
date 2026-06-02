@@ -52,7 +52,7 @@ El juego termina si:
 
 ## **ARRECIFE (Base del Jugador)** 
 
-- **Vida inicial:** 1000 puntos 
+- **Vida inicial:** 1300 puntos
 
 - **Ubicación:** Parte inferior de la pantalla, detrás del jugador 
 
@@ -142,7 +142,9 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 
 ## **Ronda 1: Invasión Inicial** 
 
-   - **Enemigos:** 15 (6 medusas, 6 calamares, 3 cangrejos) 
+   - **Enemigos:** 15 (5 medusas, 5 calamares, 5 cangrejos)
+
+   - **Barreras:** 4 barreras regeneradas completamente
 
    - **Velocidad:** Normal 
 
@@ -150,7 +152,9 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 
 - **Ronda 2: Oleada Reforzada** 
 
-   - **Enemigos:** 18 (5 medusas, 7 calamares, 6 cangrejos) 
+   - **Enemigos:** 18 (6 medusas, 6 calamares, 6 cangrejos)
+
+   - **Barreras:** 3 barreras regeneradas completamente
 
    - **Velocidad:** 25% más rápido que ronda 1 
 
@@ -158,7 +162,9 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 
 ## **Ronda 3: Asalto Masivo** 
 
-- **Enemigos:** 21 (4 medusas, 8 calamares, 9 cangrejos) 
+- **Enemigos:** 21 (7 medusas, 7 calamares, 7 cangrejos)
+
+- **Barreras:** 2 barreras regeneradas completamente
 
 - 
 
@@ -167,6 +173,8 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 - **Oxígeno del jugador:** Se regenera completamente al terminar 
 
 ## **Ronda 4: JEFE FINAL** 
+
+- **Barreras:** 2 barreras regeneradas completamente
 
 - **Enemigo:** Pulpo Leviatán 
 
@@ -203,7 +211,7 @@ Formaciones de coral que sirven como escudos entre el jugador y los enemigos. Ab
 |**Características**||
 |---|---|
 |**Atributo**|**Valor**|
-|**Cantidad**|4 barreras|
+|**Cantidad**|4 en ronda 1, 3 en ronda 2 y 2 en rondas 3 y 4|
 |**Ubicación**|Distribuidas equitativamente en el espacio entre el jugador y los<br>enemigos|
 |**Vida inicial**|40 puntos cada una|
 |**Daño por**<br>**impacto**|-5 puntos por cualquier proyectil (enemigo o jugador)|
@@ -228,7 +236,7 @@ Formaciones de coral que sirven como escudos entre el jugador y los enemigos. Ab
 
 - Bloquean proyectiles de ambos bandos (enemigos y jugador) 
 
-- **NO se regeneran entre rondas** (al igual que el arrecife) 
+- Se regeneran completamente al comenzar cada ronda
 
 - Proporcionan protección estratégica al jugador 
 

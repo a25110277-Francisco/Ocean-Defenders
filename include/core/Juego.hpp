@@ -45,12 +45,11 @@ public:
 
     void Iniciar() {
         estadoJuego.Asignar(EstadoJuego::Tipo::Jugando);
+        mostrandoTitulo = true;
         puntaje.Reiniciar();
         temporizador.Reiniciar();
         submarino = Submarino();
         arrecife = Arrecife();
-        barreras = {BarreraCoral(Posicion(110.0f, 508.0f)), BarreraCoral(Posicion(300.0f, 508.0f)),
-                    BarreraCoral(Posicion(490.0f, 508.0f)), BarreraCoral(Posicion(680.0f, 508.0f))};
         rondaActual = 0;
         direccionFormacion = 1.0f;
         temporizadorBurbuja = 0.0f;
@@ -69,7 +68,7 @@ public:
             ProcesarEventos();
 
             const float delta = std::min(reloj.restart().asSeconds(), 0.05f);
-            if (estadoJuego.EstaJugando()) {
+            if (estadoJuego.EstaJugando() && !mostrandoTitulo) {
                 Actualizar(delta);
             }
 
@@ -97,8 +96,8 @@ public:
         DibujarHud();
 
         arrecife.Dibujar(ventana);
-        for (const auto& barrera : barreras) {
-            barrera.Dibujar(ventana);
+        for (std::size_t i = 0; i < cantidadBarrerasActivas; ++i) {
+            barreras[i].Dibujar(ventana);
         }
 
         submarino.Dibujar(ventana);
@@ -116,7 +115,9 @@ public:
             recolectable->Dibujar(ventana);
         }
 
-        if (estadoJuego.Termino()) {
+        if (mostrandoTitulo) {
+            DibujarPantallaTitulo();
+        } else if (estadoJuego.Termino()) {
             DibujarPantallaFinal();
         }
 
@@ -193,6 +194,7 @@ private:
     void CrearRondaActual() {
         enemigos.clear();
         const Ronda& ronda = *rondas[rondaActual];
+        RegenerarBarreras();
 
         if (ronda.EsRondaJefe()) {
             enemigos.push_back(std::make_unique<PulpoLeviatan>(Posicion(400.0f, 120.0f)));
@@ -206,6 +208,20 @@ private:
         AgregarGrupoCalamares(ronda.ObtenerCalamares(), fila);
         fila += FilasParaCantidad(ronda.ObtenerCalamares());
         AgregarGrupoCangrejos(ronda.ObtenerCangrejos(), fila);
+    }
+
+    void RegenerarBarreras() {
+        cantidadBarrerasActivas = rondaActual == 0 ? 4 : (rondaActual == 1 ? 3 : 2);
+
+        for (auto& barrera : barreras) {
+            barrera = BarreraCoral(Posicion(-200.0f, -200.0f));
+        }
+
+        const float separacion = static_cast<float>(AnchoVentana) / static_cast<float>(cantidadBarrerasActivas + 1);
+        for (std::size_t i = 0; i < cantidadBarrerasActivas; ++i) {
+            const float posicionX = separacion * static_cast<float>(i + 1) - 46.0f;
+            barreras[i] = BarreraCoral(Posicion(posicionX, 508.0f));
+        }
     }
 
     int FilasParaCantidad(int cantidad) const {
@@ -249,7 +265,9 @@ private:
                 if (tecla->code == sf::Keyboard::Key::Escape) {
                     ventana.close();
                 }
-                if (estadoJuego.Termino() && (tecla->code == sf::Keyboard::Key::Enter || tecla->code == sf::Keyboard::Key::R)) {
+                if (mostrandoTitulo && tecla->code == sf::Keyboard::Key::Enter) {
+                    mostrandoTitulo = false;
+                } else if (estadoJuego.Termino() && tecla->code == sf::Keyboard::Key::Enter) {
                     Iniciar();
                 }
             }
@@ -375,9 +393,9 @@ private:
             if (!torpedo.EstaActivo()) {
                 continue;
             }
-            for (auto& barrera : barreras) {
-                if (!barrera.Destruida() && HayColision(torpedo.ObtenerBounds(), barrera.ObtenerBounds())) {
-                    barrera.BloquearProyectil(torpedo);
+            for (std::size_t i = 0; i < cantidadBarrerasActivas; ++i) {
+                if (!barreras[i].Destruida() && HayColision(torpedo.ObtenerBounds(), barreras[i].ObtenerBounds())) {
+                    barreras[i].BloquearProyectil(torpedo);
                     break;
                 }
             }
@@ -412,9 +430,9 @@ private:
             if (!proyectil->EstaActivo()) {
                 continue;
             }
-            for (auto& barrera : barreras) {
-                if (!barrera.Destruida() && HayColision(proyectil->ObtenerBounds(), barrera.ObtenerBounds())) {
-                    barrera.RecibirImpacto(5);
+            for (std::size_t i = 0; i < cantidadBarrerasActivas; ++i) {
+                if (!barreras[i].Destruida() && HayColision(proyectil->ObtenerBounds(), barreras[i].ObtenerBounds())) {
+                    barreras[i].RecibirImpacto(5);
                     proyectil->Impactar();
                     break;
                 }
@@ -525,7 +543,7 @@ private:
         DibujarBarra({24.0f, 48.0f}, {190.0f, 16.0f}, arrecife.ObtenerVida().ObtenerPorcentaje(), sf::Color(80, 220, 150));
 
         DibujarTexto("Oxigeno " + std::to_string(submarino.ObtenerBarraOxigeno().ObtenerActual()) + "/100", {225.0f, 11.0f}, 16);
-        DibujarTexto("Arrecife " + std::to_string(arrecife.ObtenerVida().ObtenerActual()) + "/1000", {225.0f, 41.0f}, 16);
+        DibujarTexto("Arrecife " + std::to_string(arrecife.ObtenerVida().ObtenerActual()) + "/1300", {225.0f, 41.0f}, 16);
         DibujarTexto("Puntaje " + std::to_string(puntaje.ObtenerValor()), {475.0f, 18.0f}, 18);
         DibujarTexto("Ronda " + std::to_string(rondas[rondaActual]->ObtenerNumero()) + ": " + rondas[rondaActual]->ObtenerNombre(), {475.0f, 44.0f}, 16);
     }
@@ -560,7 +578,18 @@ private:
         ventana.draw(capa);
 
         DibujarTexto(estadoJuego.ObtenerMensaje(), {210.0f, 300.0f}, 28, sf::Color(245, 250, 255));
-        DibujarTexto("Presiona Enter o R para reiniciar", {260.0f, 345.0f}, 20, sf::Color(180, 230, 255));
+        DibujarTexto("ENTER PARA REGRESAR A LA PANTALLA DEL TITULO", {175.0f, 345.0f}, 20, sf::Color(180, 230, 255));
+    }
+
+    void DibujarPantallaTitulo() {
+        sf::RectangleShape capa({static_cast<float>(AnchoVentana), static_cast<float>(AltoVentana)});
+        capa.setPosition({0.0f, 0.0f});
+        capa.setFillColor(sf::Color(0, 0, 0, 145));
+        ventana.draw(capa);
+
+        DibujarTexto("OCEAN DEFENDERS", {270.0f, 260.0f}, 42, sf::Color(130, 235, 255));
+        DibujarTexto("Protege el arrecife", {338.0f, 320.0f}, 20, sf::Color(220, 250, 255));
+        DibujarTexto("PRESIONA ENTER PARA INICIAR", {275.0f, 380.0f}, 22, sf::Color(180, 230, 255));
     }
 
     sf::RenderWindow ventana;
@@ -582,6 +611,8 @@ private:
 
     std::mt19937 generador{std::random_device{}()};
     std::size_t rondaActual{0};
+    std::size_t cantidadBarrerasActivas{4};
+    bool mostrandoTitulo{true};
     float direccionFormacion{1.0f};
     float temporizadorBurbuja{0.0f};
     float temporizadorPowerUpJefe{0.0f};

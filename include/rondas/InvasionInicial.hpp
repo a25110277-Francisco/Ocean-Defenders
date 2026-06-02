@@ -4,5 +4,5 @@
 
 class InvasionInicial : public Ronda {
 public:
-    InvasionInicial() : Ronda("Invasion Inicial", 1, 6, 6, 3, false, 1.0f) {}
+    InvasionInicial() : Ronda("Invasion Inicial", 1, 5, 5, 5, false, 1.0f) {}
 };

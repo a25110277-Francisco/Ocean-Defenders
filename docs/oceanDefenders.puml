@@ -77,7 +77,7 @@ Usuario "1" o-- "1" Submarino
 
 Juego "1" *-- "1" Submarino
 Juego "1" *-- "1" Arrecife
-Juego "1" *-- "4" BarreraCoral
+Juego "1" *-- "2..4" BarreraCoral
 Juego "1" *-- "4" Ronda
 Juego "1" *-- "1" Puntaje
 Juego "1" *-- "1" EstadoJuego
@@ -140,17 +140,17 @@ BurbujaOxigeno "1" *-- "1" RecuperacionOxigeno
 Ronda "1" *-- "1" Velocidad
 Temporizador "1" *-- "1" Tiempo
 
-InvasionInicial "1" *-- "6" Medusa
-InvasionInicial "1" *-- "6" Calamar
-InvasionInicial "1" *-- "3" Cangrejo
+InvasionInicial "1" *-- "5" Medusa
+InvasionInicial "1" *-- "5" Calamar
+InvasionInicial "1" *-- "5" Cangrejo
 
-OleadaReforzada "1" *-- "5" Medusa
-OleadaReforzada "1" *-- "7" Calamar
+OleadaReforzada "1" *-- "6" Medusa
+OleadaReforzada "1" *-- "6" Calamar
 OleadaReforzada "1" *-- "6" Cangrejo
 
-AsaltoMasivo "1" *-- "4" Medusa
-AsaltoMasivo "1" *-- "8" Calamar
-AsaltoMasivo "1" *-- "9" Cangrejo
+AsaltoMasivo "1" *-- "7" Medusa
+AsaltoMasivo "1" *-- "7" Calamar
+AsaltoMasivo "1" *-- "7" Cangrejo
 
 RondaJefe "1" *-- "1" PulpoLeviatan
 
@@ -290,16 +290,16 @@ Si llega a 0, el jugador pierde.
 end note
 
 note right of Arrecife
-Vida inicial: 1000 puntos.
+Vida inicial: 1300 puntos.
 No se regenera entre rondas.
 Si llega a 0, el jugador pierde.
 end note
 
 note right of BarreraCoral
-Cantidad: 4 barreras.
+Cantidad: 4, 3, 2 y 2 por ronda.
 Vida inicial: 40 puntos.
 Cada impacto causa -5 puntos.
-No se regeneran entre rondas.
+Se regeneran al comenzar cada ronda.
 end note
 
 note right of EstadoBarrera
@@ -361,21 +361,24 @@ end note
 
 note right of InvasionInicial
 Ronda 1.
-15 enemigos.
+15 enemigos: 5 por fila.
+4 barreras.
 Velocidad normal.
 Oxígeno se regenera al terminar.
 end note
 
 note right of OleadaReforzada
 Ronda 2.
-18 enemigos.
+18 enemigos: 6 por fila.
+3 barreras.
 Velocidad 25% mayor.
 Oxígeno se regenera al terminar.
 end note
 
 note right of AsaltoMasivo
 Ronda 3.
-21 enemigos.
+21 enemigos: 7 por fila.
+2 barreras.
 Velocidad 50% mayor.
 Oxígeno se regenera al terminar.
 end note
@@ -383,6 +386,7 @@ end note
 note right of RondaJefe
 Ronda 4.
 Jefe final: PulpoLeviatan.
+2 barreras.
 Condición de victoria: derrotar al jefe.
 Oxígeno se regenera al comenzar.
 end note

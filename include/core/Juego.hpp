@@ -381,25 +381,10 @@ private:
     }
 
     void ResolverColisiones() {
-        ResolverTorpedosContraBarreras();
         ResolverTorpedosContraEnemigos();
         ResolverProyectilesContraBarreras();
         ResolverProyectilesContraSubmarinoYArrecife();
         ResolverRecolectables();
-    }
-
-    void ResolverTorpedosContraBarreras() {
-        for (auto& torpedo : torpedos) {
-            if (!torpedo.EstaActivo()) {
-                continue;
-            }
-            for (std::size_t i = 0; i < cantidadBarrerasActivas; ++i) {
-                if (!barreras[i].Destruida() && HayColision(torpedo.ObtenerBounds(), barreras[i].ObtenerBounds())) {
-                    barreras[i].BloquearProyectil(torpedo);
-                    break;
-                }
-            }
-        }
     }
 
     void ResolverTorpedosContraEnemigos() {

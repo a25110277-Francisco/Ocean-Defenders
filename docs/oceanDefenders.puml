@@ -298,7 +298,8 @@ end note
 note right of BarreraCoral
 Cantidad: 4, 3, 2 y 2 por ronda.
 Vida inicial: 40 puntos.
-Cada impacto causa -5 puntos.
+Cada proyectil enemigo causa -5 puntos.
+Los torpedos no causan dano.
 Se regeneran al comenzar cada ronda.
 end note
 

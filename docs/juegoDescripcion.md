@@ -204,7 +204,7 @@ Perfecto, agrego la sección de barreras con temática submarina coherente con t
 
 ## **Descripción** 
 
-Formaciones de coral que sirven como escudos entre el jugador y los enemigos. Absorben tanto los proyectiles enemigos como los torpedos del jugador que impacten contra ellas. 
+Formaciones de coral que sirven como escudos entre el jugador y los enemigos. Absorben los proyectiles enemigos. Los torpedos del jugador las atraviesan sin causar dano.
 
 ## **Características** 
 
@@ -214,7 +214,7 @@ Formaciones de coral que sirven como escudos entre el jugador y los enemigos. Ab
 |**Cantidad**|4 en ronda 1, 3 en ronda 2 y 2 en rondas 3 y 4|
 |**Ubicación**|Distribuidas equitativamente en el espacio entre el jugador y los<br>enemigos|
 |**Vida inicial**|40 puntos cada una|
-|**Daño por**<br>**impacto**|-5 puntos por cualquier proyectil (enemigo o jugador)|
+|**Daño por**<br>**impacto**|-5 puntos por proyectil enemigo|
 
 
 
@@ -234,13 +234,13 @@ Formaciones de coral que sirven como escudos entre el jugador y los enemigos. Ab
 
 ## **Comportamiento** 
 
-- Bloquean proyectiles de ambos bandos (enemigos y jugador) 
+- Bloquean solamente proyectiles enemigos
 
 - Se regeneran completamente al comenzar cada ronda
 
 - Proporcionan protección estratégica al jugador 
 
-- El jugador debe decidir si dispara a través de ellas (arriesgando destruirlas) o las usa como cobertura 
+- Los torpedos del jugador atraviesan las barreras sin destruirlas
 
 ## **Consideración Estratégica** 
 

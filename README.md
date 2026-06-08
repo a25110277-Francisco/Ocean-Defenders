@@ -28,8 +28,11 @@ El ejecutable principal se genera como `bin/OceanDefenders.exe`.
 - Las barreras de coral tienen 40 HP, bloquean proyectiles enemigos y se regeneran al cambiar de ronda. Los torpedos del submarino las atraviesan sin causar dano.
 - Hay 4 barreras en la ronda 1, 3 en la ronda 2 y 2 en las rondas 3 y 4.
 - Las rondas 1 a 3 usan una fila de medusas, una de calamares y una de cangrejos con 5, 6 y 7 enemigos por fila respectivamente.
-- La ronda 4 enfrenta al Pulpo Leviatan con dos fases de disparo.
-- Los enemigos pueden soltar power-ups y las burbujas restauran oxigeno cada 15 segundos.
+- La ronda 4 enfrenta al Pulpo Leviatan con dos fases de disparo, movimiento libre y barra de vida visible.
+- La bandera roja marca el limite de invasion: si un enemigo llega ahi, pierdes.
+- Los enemigos pueden soltar power-ups con colores distintos y las burbujas restauran oxigeno cada 15 segundos.
+- El power-up de velocidad aumenta el movimiento del submarino en 25%.
+- La vista mantiene proporcion al redimensionar o usar pantalla completa para evitar que se estire.
 
 ## Tecnologia
 
@@ -37,7 +40,8 @@ El ejecutable principal se genera como `bin/OceanDefenders.exe`.
 - Libreria grafica: SFML 3.0.
 - Estructura: clases inline en headers dentro de `include`.
 - Visuales: primitivas SFML con rectangulos y circulos.
+- Fuente principal: Comic Sans MS.
 
 ## Creditos
 
-- Fuente HUD: Noto Sans, distribuida bajo SIL Open Font License.
+- Fuente de respaldo: Noto Sans, distribuida bajo SIL Open Font License.

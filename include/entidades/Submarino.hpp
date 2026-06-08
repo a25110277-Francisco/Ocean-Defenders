@@ -139,7 +139,7 @@ public:
 
 private:
     float ObtenerVelocidadActual() const {
-        return velocidad.x * (velocidadAumentada.Activa() ? 1.5f : 1.0f);
+        return velocidad.x * (velocidadAumentada.Activa() ? 1.25f : 1.0f);
     }
 
     BarraOxigeno barraOxigeno;

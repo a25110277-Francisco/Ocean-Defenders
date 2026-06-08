@@ -14,20 +14,27 @@ public:
 
     void MoverErratico(float delta, float anchoVentana) {
         tiempo += delta;
-        const float direccion = std::sin(tiempo * 1.7f) >= 0.0f ? 1.0f : -1.0f;
-        posicion.Mover(direccion * velocidad.x * delta, std::sin(tiempo * 2.3f) * 22.0f * delta);
+        posicion.Mover(movimientoActual.x * delta, movimientoActual.y * delta);
+
+        if (std::sin(tiempo * 1.3f) > 0.96f) {
+            movimientoActual.y = -movimientoActual.y;
+        }
 
         if (posicion.x < 20.0f) {
             posicion.x = 20.0f;
+            movimientoActual.x = std::abs(movimientoActual.x);
         }
         if (posicion.x + tamano.x > anchoVentana - 20.0f) {
             posicion.x = anchoVentana - 20.0f - tamano.x;
+            movimientoActual.x = -std::abs(movimientoActual.x);
         }
         if (posicion.y < 92.0f) {
             posicion.y = 92.0f;
+            movimientoActual.y = std::abs(movimientoActual.y);
         }
-        if (posicion.y > 235.0f) {
-            posicion.y = 235.0f;
+        if (posicion.y > 350.0f) {
+            posicion.y = 350.0f;
+            movimientoActual.y = -std::abs(movimientoActual.y);
         }
         cadenciaDisparo.Actualizar(delta);
         ActivarFase();
@@ -47,5 +54,6 @@ public:
 
 private:
     FaseJefe faseJefe;
+    Velocidad movimientoActual{145.0f, 85.0f};
     float tiempo{0.0f};
 };

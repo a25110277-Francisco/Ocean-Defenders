@@ -36,9 +36,11 @@ class Juego {
 public:
     Juego()
         : ventana(sf::VideoMode({AnchoVentana, AltoVentana}), "Ocean Defenders"),
+          vistaJuego(sf::FloatRect({0.0f, 0.0f}, {static_cast<float>(AnchoVentana), static_cast<float>(AltoVentana)})),
           barreras{BarreraCoral(Posicion(110.0f, 508.0f)), BarreraCoral(Posicion(300.0f, 508.0f)),
                    BarreraCoral(Posicion(490.0f, 508.0f)), BarreraCoral(Posicion(680.0f, 508.0f))} {
         ventana.setFramerateLimit(60);
+        ActualizarVista(ventana.getSize());
         CargarFuente();
         CrearRondas();
     }
@@ -91,7 +93,8 @@ public:
     }
 
     void Dibujar() {
-        ventana.clear(sf::Color(6, 27, 54));
+        ventana.clear(sf::Color::Black);
+        ventana.setView(vistaJuego);
         DibujarFondo();
         DibujarHud();
 
@@ -105,6 +108,7 @@ public:
         for (const auto& enemigo : enemigos) {
             enemigo->Dibujar(ventana);
         }
+        DibujarBarraVidaJefe();
         for (const auto& torpedo : torpedos) {
             torpedo.Dibujar(ventana);
         }
@@ -185,10 +189,36 @@ private:
     }
 
     void CargarFuente() {
-        fuenteCargada = fuente.openFromFile("assets/fonts/NotoSans-Regular.ttf");
+        fuenteCargada = fuente.openFromFile("C:/Windows/Fonts/comic.ttf");
+        if (!fuenteCargada) {
+            fuenteCargada = fuente.openFromFile("assets/fonts/NotoSans-Regular.ttf");
+        }
         if (!fuenteCargada) {
             fuenteCargada = fuente.openFromFile("C:/Windows/Fonts/arial.ttf");
         }
+    }
+
+    void ActualizarVista(sf::Vector2u tamanoVentana) {
+        const float ancho = static_cast<float>(tamanoVentana.x);
+        const float alto = static_cast<float>(tamanoVentana.y);
+        const float proporcionVentana = ancho / alto;
+        const float proporcionJuego = static_cast<float>(AnchoVentana) / static_cast<float>(AltoVentana);
+
+        float viewportX = 0.0f;
+        float viewportY = 0.0f;
+        float viewportAncho = 1.0f;
+        float viewportAlto = 1.0f;
+
+        if (proporcionVentana > proporcionJuego) {
+            viewportAncho = proporcionJuego / proporcionVentana;
+            viewportX = (1.0f - viewportAncho) * 0.5f;
+        } else {
+            viewportAlto = proporcionVentana / proporcionJuego;
+            viewportY = (1.0f - viewportAlto) * 0.5f;
+        }
+
+        vistaJuego.setViewport(sf::FloatRect({viewportX, viewportY}, {viewportAncho, viewportAlto}));
+        ventana.setView(vistaJuego);
     }
 
     void CrearRondaActual() {
@@ -270,6 +300,10 @@ private:
                 } else if (estadoJuego.Termino() && tecla->code == sf::Keyboard::Key::Enter) {
                     Iniciar();
                 }
+            }
+
+            if (const auto* redimension = evento->getIf<sf::Event::Resized>()) {
+                ActualizarVista(redimension->size);
             }
         }
     }
@@ -521,6 +555,8 @@ private:
             burbuja.setFillColor(sf::Color(80, 160, 190, 80));
             ventana.draw(burbuja);
         }
+
+        DibujarBanderaLimite();
     }
 
     void DibujarHud() {
@@ -545,6 +581,45 @@ private:
         ventana.draw(relleno);
     }
 
+    void DibujarBarraVidaJefe() {
+        if (!rondas[rondaActual]->EsRondaJefe() || enemigos.empty()) {
+            return;
+        }
+
+        const auto* jefe = dynamic_cast<const PulpoLeviatan*>(enemigos.front().get());
+        if (!jefe || jefe->Destruido()) {
+            return;
+        }
+
+        const sf::FloatRect bounds = jefe->ObtenerBounds();
+        const sf::Vector2f posicionBarra(bounds.position.x, bounds.position.y - 18.0f);
+        const sf::Vector2f tamanoBarra(bounds.size.x, 9.0f);
+
+        DibujarBarra(posicionBarra, tamanoBarra, jefe->ObtenerVida().ObtenerPorcentaje(), sf::Color(220, 60, 210));
+    }
+
+    void DibujarBanderaLimite() {
+        sf::RectangleShape linea({static_cast<float>(AnchoVentana), 3.0f});
+        linea.setPosition({0.0f, LimiteInvasionY});
+        linea.setFillColor(sf::Color(255, 70, 70));
+        ventana.draw(linea);
+
+        sf::RectangleShape mastil({5.0f, 38.0f});
+        mastil.setPosition({18.0f, LimiteInvasionY - 36.0f});
+        mastil.setFillColor(sf::Color(245, 245, 245));
+        ventana.draw(mastil);
+
+        sf::ConvexShape bandera;
+        bandera.setPointCount(3);
+        bandera.setPoint(0, {23.0f, LimiteInvasionY - 36.0f});
+        bandera.setPoint(1, {78.0f, LimiteInvasionY - 22.0f});
+        bandera.setPoint(2, {23.0f, LimiteInvasionY - 8.0f});
+        bandera.setFillColor(sf::Color(255, 70, 70));
+        ventana.draw(bandera);
+
+        DibujarTexto("LIMITE", {86.0f, LimiteInvasionY - 32.0f}, 16, sf::Color(255, 235, 235));
+    }
+
     void DibujarTexto(const std::string& texto, sf::Vector2f posicion, unsigned int tamano, sf::Color color = sf::Color::White) {
         if (!fuenteCargada) {
             return;
@@ -553,6 +628,18 @@ private:
         sf::Text etiqueta(fuente, texto, tamano);
         etiqueta.setFillColor(color);
         etiqueta.setPosition(posicion);
+        ventana.draw(etiqueta);
+    }
+
+    void DibujarTextoCentrado(const std::string& texto, float centroX, float y, unsigned int tamano, sf::Color color = sf::Color::White) {
+        if (!fuenteCargada) {
+            return;
+        }
+
+        sf::Text etiqueta(fuente, texto, tamano);
+        etiqueta.setFillColor(color);
+        const sf::FloatRect bounds = etiqueta.getLocalBounds();
+        etiqueta.setPosition({centroX - bounds.size.x * 0.5f - bounds.position.x, y});
         ventana.draw(etiqueta);
     }
 
@@ -572,12 +659,13 @@ private:
         capa.setFillColor(sf::Color(0, 0, 0, 145));
         ventana.draw(capa);
 
-        DibujarTexto("OCEAN DEFENDERS", {270.0f, 260.0f}, 42, sf::Color(130, 235, 255));
-        DibujarTexto("Protege el arrecife", {338.0f, 320.0f}, 20, sf::Color(220, 250, 255));
-        DibujarTexto("PRESIONA ENTER PARA INICIAR", {275.0f, 380.0f}, 22, sf::Color(180, 230, 255));
+        DibujarTextoCentrado("OCEAN DEFENDERS", static_cast<float>(AnchoVentana) * 0.5f, 260.0f, 42, sf::Color(130, 235, 255));
+        DibujarTextoCentrado("PROTEGE EL ARRECIFE", static_cast<float>(AnchoVentana) * 0.5f, 320.0f, 20, sf::Color(220, 250, 255));
+        DibujarTextoCentrado("PRESIONA ENTER PARA INICIAR", static_cast<float>(AnchoVentana) * 0.5f, 380.0f, 22, sf::Color(180, 230, 255));
     }
 
     sf::RenderWindow ventana;
+    sf::View vistaJuego;
     sf::Font fuente;
     bool fuenteCargada{false};
 

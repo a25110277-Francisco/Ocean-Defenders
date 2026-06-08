@@ -5,7 +5,7 @@
 class DobleDisparo : public PowerUp {
 public:
     explicit DobleDisparo(Posicion posicionInicial)
-        : PowerUp(posicionInicial, 10.0f, sf::Color(110, 240, 255)) {}
+        : PowerUp(posicionInicial, 10.0f, sf::Color(255, 220, 70)) {}
 
     void Activar(Submarino& submarino) override {
         submarino.ActivarDobleDisparo(10.0f);

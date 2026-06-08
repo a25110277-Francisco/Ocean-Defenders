@@ -106,7 +106,7 @@ El juego termina si:
 
 - 
 
-   - **Movimiento:** Más errático que enemigos normales 
+   - **Movimiento:** Más libre que enemigos normales, con desplazamiento horizontal y vertical dentro de su zona
 
 - 
 
@@ -121,7 +121,7 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 |**Power-Up**|**Efecto**|**Duración**|
 |---|---|---|
 |**Doble Disparo**|Dispara 2 torpedos simultáneamente|10 segundos|
-|**Velocidad Aumentada**|Movimiento 50% más rápido|5 segundos|
+|**Velocidad Aumentada**|Movimiento 25% más rápido|5 segundos|
 |**Suministro de Oxígeno**|Restaura 30 puntos de oxígeno|Instantáneo|
 
 

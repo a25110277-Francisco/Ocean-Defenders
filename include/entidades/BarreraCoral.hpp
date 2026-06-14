@@ -44,18 +44,39 @@ public:
         return vida.EstaAgotada();
     }
 
-    void Dibujar(sf::RenderWindow& ventana) const {
+    void Dibujar(sf::RenderWindow& ventana, const sf::Texture* textura = nullptr) const {
         if (vida.EstaAgotada()) {
             return;
         }
 
-        sf::Color color = sf::Color(35, 220, 150);
+        sf::Color color = sf::Color::White;
         if (estadoBarrera.ObtenerTipo() == EstadoBarrera::Tipo::Agrietada) {
-            color = sf::Color(80, 175, 130);
+            color = sf::Color(190, 190, 190);
         } else if (estadoBarrera.ObtenerTipo() == EstadoBarrera::Tipo::Fracturada) {
-            color = sf::Color(120, 120, 95);
+            color = sf::Color(125, 125, 125);
         }
 
+        if (textura != nullptr) {
+            const sf::Vector2u texturaTamano = textura->getSize();
+            const int recorteY = static_cast<int>(static_cast<float>(texturaTamano.y) * 0.20f);
+            const int recorteAlto = static_cast<int>(static_cast<float>(texturaTamano.y) * 0.62f);
+            const sf::IntRect recorte(
+                {0, recorteY},
+                {static_cast<int>(texturaTamano.x), recorteAlto}
+            );
+
+            sf::Sprite sprite(*textura, recorte);
+            sprite.setPosition(posicion.ObtenerVector());
+            sprite.setScale({
+                tamano.x / static_cast<float>(recorte.size.x),
+                tamano.y / static_cast<float>(recorte.size.y)
+            });
+            sprite.setColor(color);
+            ventana.draw(sprite);
+            return;
+        }
+
+        color = sf::Color(35, 220, 150);
         sf::RectangleShape tronco({tamano.x, tamano.y * 0.55f});
         tronco.setPosition({posicion.x, posicion.y + tamano.y * 0.35f});
         tronco.setFillColor(color);
@@ -83,5 +104,5 @@ private:
     Vida vida;
     Posicion posicion;
     EstadoBarrera estadoBarrera;
-    sf::Vector2f tamano{92.0f, 44.0f};
+    sf::Vector2f tamano{110.0f, 70.0f};
 };

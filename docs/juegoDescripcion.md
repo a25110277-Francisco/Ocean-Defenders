@@ -184,6 +184,8 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 
 **Nota importante:** El arrecife mantiene el daño acumulado de todas las rondas anteriores. 
 
+El arrecife utiliza la imagen `reef.png`. Su sprite pierde fragmentos y color conforme disminuye su vida. La barra de vida se muestra unicamente en el HUD superior.
+
 ## **CONDICIONES DE VICTORIA Y DERROTA** 
 
 ## **Victoria** 
@@ -207,6 +209,8 @@ Perfecto, agrego la sección de barreras con temática submarina coherente con t
 Formaciones de coral que sirven como escudos entre el jugador y los enemigos. Absorben los proyectiles enemigos. Los torpedos del jugador las atraviesan sin causar dano.
 
 Las barreras alternan las imagenes `wall1.png` y `wall2.png` para mostrar dos formaciones de coral distintas.
+
+Cada impacto elimina progresivamente un fragmento visible del sprite de la barrera.
 
 ## **Características** 
 

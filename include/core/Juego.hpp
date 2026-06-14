@@ -100,7 +100,7 @@ public:
         DibujarFondo();
         DibujarHud();
 
-        arrecife.Dibujar(ventana);
+        arrecife.Dibujar(ventana, texturaArrecifeCargada ? &texturaArrecife : nullptr);
         for (std::size_t i = 0; i < cantidadBarrerasActivas; ++i) {
             const sf::Texture* textura = nullptr;
             if (texturasBarrerasCargadas) {
@@ -209,10 +209,14 @@ private:
 
         const bool wall1Cargada = texturaWall1.loadFromFile("assets/stage/wall1.png");
         const bool wall2Cargada = texturaWall2.loadFromFile("assets/stage/wall2.png");
+        texturaArrecifeCargada = texturaArrecife.loadFromFile("assets/stage/reef.png");
         texturasBarrerasCargadas = wall1Cargada && wall2Cargada;
         if (texturasBarrerasCargadas) {
             texturaWall1.setSmooth(false);
             texturaWall2.setSmooth(false);
+        }
+        if (texturaArrecifeCargada) {
+            texturaArrecife.setSmooth(false);
         }
 
         musicaPrincipalCargada = musicaPrincipal.openFromFile("assets/music/principal.ogg");
@@ -696,9 +700,11 @@ private:
     sf::Font fuente;
     sf::Texture texturaWall1;
     sf::Texture texturaWall2;
+    sf::Texture texturaArrecife;
     sf::Music musicaPrincipal;
     bool fuenteCargada{false};
     bool texturasBarrerasCargadas{false};
+    bool texturaArrecifeCargada{false};
     bool musicaPrincipalCargada{false};
 
     Submarino submarino;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <algorithm>
 #include <array>
@@ -41,7 +42,7 @@ public:
                    BarreraCoral(Posicion(490.0f, 508.0f)), BarreraCoral(Posicion(680.0f, 508.0f))} {
         ventana.setFramerateLimit(60);
         ActualizarVista(ventana.getSize());
-        CargarFuente();
+        CargarRecursos();
         CrearRondas();
     }
 
@@ -56,6 +57,7 @@ public:
         direccionFormacion = 1.0f;
         temporizadorBurbuja = 0.0f;
         temporizadorPowerUpJefe = 0.0f;
+        musicaPrincipal.stop();
         torpedos.clear();
         proyectilesEnemigos.clear();
         recolectables.clear();
@@ -100,7 +102,11 @@ public:
 
         arrecife.Dibujar(ventana);
         for (std::size_t i = 0; i < cantidadBarrerasActivas; ++i) {
-            barreras[i].Dibujar(ventana);
+            const sf::Texture* textura = nullptr;
+            if (texturasBarrerasCargadas) {
+                textura = i % 2 == 0 ? &texturaWall1 : &texturaWall2;
+            }
+            barreras[i].Dibujar(ventana, textura);
         }
 
         submarino.Dibujar(ventana);
@@ -152,6 +158,7 @@ public:
 
         if (rondas[rondaActual]->EsRondaJefe() && enemigos.empty()) {
             estadoJuego.Asignar(EstadoJuego::Tipo::Victoria);
+            musicaPrincipal.stop();
         }
         return estadoJuego;
     }
@@ -163,12 +170,15 @@ public:
 
         if (submarino.ObtenerBarraOxigeno().EstaAgotada()) {
             estadoJuego.Asignar(EstadoJuego::Tipo::DerrotaOxigeno);
+            musicaPrincipal.stop();
         } else if (arrecife.Destruido()) {
             estadoJuego.Asignar(EstadoJuego::Tipo::DerrotaArrecife);
+            musicaPrincipal.stop();
         } else {
             for (const auto& enemigo : enemigos) {
                 if (enemigo->LlegoAlFondo(LimiteInvasionY)) {
                     estadoJuego.Asignar(EstadoJuego::Tipo::DerrotaInvasion);
+                    musicaPrincipal.stop();
                     break;
                 }
             }
@@ -188,13 +198,27 @@ private:
         rondas[3] = std::make_unique<RondaJefe>();
     }
 
-    void CargarFuente() {
-        fuenteCargada = fuente.openFromFile("C:/Windows/Fonts/comic.ttf");
+    void CargarRecursos() {
+        fuenteCargada = fuente.openFromFile("assets/fonts/PIXEL LETTER/Pixel Digivolve.otf");
         if (!fuenteCargada) {
             fuenteCargada = fuente.openFromFile("assets/fonts/NotoSans-Regular.ttf");
         }
         if (!fuenteCargada) {
             fuenteCargada = fuente.openFromFile("C:/Windows/Fonts/arial.ttf");
+        }
+
+        const bool wall1Cargada = texturaWall1.loadFromFile("assets/stage/wall1.png");
+        const bool wall2Cargada = texturaWall2.loadFromFile("assets/stage/wall2.png");
+        texturasBarrerasCargadas = wall1Cargada && wall2Cargada;
+        if (texturasBarrerasCargadas) {
+            texturaWall1.setSmooth(false);
+            texturaWall2.setSmooth(false);
+        }
+
+        musicaPrincipalCargada = musicaPrincipal.openFromFile("assets/music/principal.ogg");
+        if (musicaPrincipalCargada) {
+            musicaPrincipal.setLooping(true);
+            musicaPrincipal.setVolume(35.0f);
         }
     }
 
@@ -249,8 +273,8 @@ private:
 
         const float separacion = static_cast<float>(AnchoVentana) / static_cast<float>(cantidadBarrerasActivas + 1);
         for (std::size_t i = 0; i < cantidadBarrerasActivas; ++i) {
-            const float posicionX = separacion * static_cast<float>(i + 1) - 46.0f;
-            barreras[i] = BarreraCoral(Posicion(posicionX, 508.0f));
+            const float posicionX = separacion * static_cast<float>(i + 1) - 55.0f;
+            barreras[i] = BarreraCoral(Posicion(posicionX, 490.0f));
         }
     }
 
@@ -297,6 +321,9 @@ private:
                 }
                 if (mostrandoTitulo && tecla->code == sf::Keyboard::Key::Enter) {
                     mostrandoTitulo = false;
+                    if (musicaPrincipalCargada) {
+                        musicaPrincipal.play();
+                    }
                 } else if (estadoJuego.Termino() && tecla->code == sf::Keyboard::Key::Enter) {
                     Iniciar();
                 }
@@ -667,7 +694,12 @@ private:
     sf::RenderWindow ventana;
     sf::View vistaJuego;
     sf::Font fuente;
+    sf::Texture texturaWall1;
+    sf::Texture texturaWall2;
+    sf::Music musicaPrincipal;
     bool fuenteCargada{false};
+    bool texturasBarrerasCargadas{false};
+    bool musicaPrincipalCargada{false};
 
     Submarino submarino;
     Arrecife arrecife;

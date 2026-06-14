@@ -206,6 +206,8 @@ Perfecto, agrego la sección de barreras con temática submarina coherente con t
 
 Formaciones de coral que sirven como escudos entre el jugador y los enemigos. Absorben los proyectiles enemigos. Los torpedos del jugador las atraviesan sin causar dano.
 
+Las barreras alternan las imagenes `wall1.png` y `wall2.png` para mostrar dos formaciones de coral distintas.
+
 ## **Características** 
 
 |**Características**||

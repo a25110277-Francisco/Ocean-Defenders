@@ -29,7 +29,7 @@ El ejecutable principal se genera como `bin/OceanDefenders.exe`.
 - Hay 4 barreras en la ronda 1, 3 en la ronda 2 y 2 en las rondas 3 y 4.
 - Las rondas 1 a 3 usan una fila de medusas, una de calamares y una de cangrejos con 5, 6 y 7 enemigos por fila respectivamente.
 - La ronda 4 enfrenta al Pulpo Leviatan con dos fases de disparo, movimiento libre y barra de vida visible.
-- La bandera roja marca el limite de invasion: si un enemigo llega ahi, pierdes.
+- La bandera roja marca el limite de invasion: pierdes cuando un enemigo la cruza.
 - Los enemigos pueden soltar power-ups con colores distintos y las burbujas restauran oxigeno cada 15 segundos.
 - El power-up de velocidad aumenta el movimiento del submarino en 25%.
 - La vista mantiene proporcion al redimensionar o usar pantalla completa para evitar que se estire.

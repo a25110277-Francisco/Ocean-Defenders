@@ -94,7 +94,7 @@ public:
     }
 
     bool LlegoAlFondo(float limiteY) const {
-        return posicion.y + tamano.y >= limiteY;
+        return posicion.y > limiteY;
     }
 
     Posicion ObtenerPosicionDisparo() const {

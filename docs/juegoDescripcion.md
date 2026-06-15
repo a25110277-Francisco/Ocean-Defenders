@@ -164,7 +164,7 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 
 - 
 
-   - **Velocidad:** 50% más rápido que ronda 1 
+   - **Velocidad:** 40% más rápido que ronda 1
 
 - **Oxígeno del jugador:** Se regenera completamente al terminar 
 

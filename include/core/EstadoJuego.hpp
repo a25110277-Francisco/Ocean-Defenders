@@ -34,7 +34,7 @@ public:
     std::string ObtenerMensaje() const {
         switch (tipo) {
             case Tipo::Victoria:
-                return "Victoria: derrotaste al Pulpo Leviatan";
+                return "Victoria: derrotaste al Pez Globo";
             case Tipo::DerrotaOxigeno:
                 return "Derrota: oxigeno agotado";
             case Tipo::DerrotaArrecife:

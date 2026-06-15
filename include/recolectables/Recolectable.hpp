@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <string>
 #include "componentes/Posicion.hpp"
 #include "componentes/Velocidad.hpp"
@@ -23,8 +24,28 @@ public:
 
     virtual void Recolectar(Submarino& submarino) = 0;
 
-    virtual void Dibujar(sf::RenderWindow& ventana) const {
+    virtual void Dibujar(sf::RenderWindow& ventana, const sf::Texture* textura = nullptr) const {
         if (!activo) {
+            return;
+        }
+
+        if (textura != nullptr) {
+            const sf::Vector2u texturaTamano = textura->getSize();
+            const float escala = std::min(
+                32.0f / static_cast<float>(texturaTamano.x),
+                32.0f / static_cast<float>(texturaTamano.y)
+            );
+            const sf::Vector2f tamanoVisual{
+                static_cast<float>(texturaTamano.x) * escala,
+                static_cast<float>(texturaTamano.y) * escala
+            };
+            sf::Sprite sprite(*textura);
+            sprite.setPosition({
+                posicion.x + (tamano.x - tamanoVisual.x) * 0.5f,
+                posicion.y + (tamano.y - tamanoVisual.y) * 0.5f
+            });
+            sprite.setScale({escala, escala});
+            ventana.draw(sprite);
             return;
         }
 

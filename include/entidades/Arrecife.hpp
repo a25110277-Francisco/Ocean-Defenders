@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <algorithm>
 #include "componentes/Posicion.hpp"
 #include "componentes/Vida.hpp"
 #include "core/EstadoJuego.hpp"
@@ -33,24 +32,11 @@ public:
         }
 
         if (textura != nullptr) {
-            constexpr int CantidadEtapas = 5;
             const sf::Vector2u texturaTamano = textura->getSize();
-            const int danoAcumulado = vida.ObtenerMaxima() - vida.ObtenerActual();
-            const int etapa = std::clamp(
-                danoAcumulado * CantidadEtapas / vida.ObtenerMaxima(),
-                0,
-                CantidadEtapas - 1
-            );
-            const int altoCuadro = static_cast<int>(texturaTamano.y) / CantidadEtapas;
-            const int inicioY = etapa * altoCuadro;
             const float escala = tamano.x / static_cast<float>(texturaTamano.x);
-            const float altoVisual = static_cast<float>(altoCuadro) * escala;
+            const float altoVisual = static_cast<float>(texturaTamano.y) * escala;
             const float posicionVisualY = posicion.y + tamano.y - altoVisual;
-            const sf::IntRect recorte(
-                {0, inicioY},
-                {static_cast<int>(texturaTamano.x), altoCuadro}
-            );
-            sf::Sprite sprite(*textura, recorte);
+            sf::Sprite sprite(*textura);
             sprite.setPosition({posicion.x, posicionVisualY});
             sprite.setScale({escala, escala});
             ventana.draw(sprite);

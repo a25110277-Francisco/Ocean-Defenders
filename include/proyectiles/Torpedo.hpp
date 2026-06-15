@@ -17,4 +17,32 @@ public:
     void ImpactarBarrera(BarreraCoral&) {
         Impactar();
     }
+
+    void Dibujar(sf::RenderWindow& ventana) const override {
+        Dibujar(ventana, nullptr);
+    }
+
+    void Dibujar(sf::RenderWindow& ventana, const sf::Texture* textura) const {
+        if (!activo) {
+            return;
+        }
+
+        if (textura == nullptr) {
+            Proyectil::Dibujar(ventana);
+            return;
+        }
+
+        const sf::Vector2u texturaTamano = textura->getSize();
+        const sf::Vector2f tamanoVisual{24.0f, 24.0f};
+        sf::Sprite sprite(*textura);
+        sprite.setPosition({
+            posicion.x + (tamano.x - tamanoVisual.x) * 0.5f,
+            posicion.y + (tamano.y - tamanoVisual.y) * 0.5f
+        });
+        sprite.setScale({
+            tamanoVisual.x / static_cast<float>(texturaTamano.x),
+            tamanoVisual.y / static_cast<float>(texturaTamano.y)
+        });
+        ventana.draw(sprite);
+    }
 };

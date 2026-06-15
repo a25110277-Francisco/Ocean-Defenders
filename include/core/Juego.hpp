@@ -18,7 +18,7 @@
 #include "entidades/Calamar.hpp"
 #include "entidades/Cangrejo.hpp"
 #include "entidades/Medusa.hpp"
-#include "entidades/PulpoLeviatan.hpp"
+#include "entidades/PezGlobo.hpp"
 #include "entidades/Submarino.hpp"
 #include "proyectiles/ProyectilEnemigo.hpp"
 #include "proyectiles/Torpedo.hpp"
@@ -58,6 +58,8 @@ public:
         temporizadorBurbuja = 0.0f;
         temporizadorPowerUpJefe = 0.0f;
         tiempoAnimacionEnemigos = 0.0f;
+        tiempoMuerteSubmarino = 0.0f;
+        submarinoEnMuerte = false;
         musicaPrincipal.stop();
         torpedos.clear();
         proyectilesEnemigos.clear();
@@ -74,6 +76,7 @@ public:
             ProcesarEventos();
 
             const float delta = std::min(reloj.restart().asSeconds(), 0.05f);
+            ActualizarMuerteSubmarino(delta);
             if (estadoJuego.EstaJugando() && !mostrandoTitulo) {
                 Actualizar(delta);
             }
@@ -109,7 +112,11 @@ public:
             barreras[i].Dibujar(ventana, texturaBarreraCargada ? &texturaBarrera : nullptr);
         }
 
-        submarino.Dibujar(ventana);
+        if (submarinoEnMuerte) {
+            DibujarMuerteSubmarino();
+        } else {
+            submarino.Dibujar(ventana, texturasHeroeCargadas ? &texturaSubmarino : nullptr);
+        }
 
         for (const auto& enemigo : enemigos) {
             enemigo->Dibujar(ventana, ObtenerTexturaMovimiento(*enemigo), tiempoAnimacionEnemigos);
@@ -117,13 +124,13 @@ public:
         DibujarEfectosMuerte();
         DibujarBarraVidaJefe();
         for (const auto& torpedo : torpedos) {
-            torpedo.Dibujar(ventana);
+            torpedo.Dibujar(ventana, texturasHeroeCargadas ? &texturaTorpedo : nullptr);
         }
         for (const auto& proyectil : proyectilesEnemigos) {
             proyectil->Dibujar(ventana);
         }
         for (const auto& recolectable : recolectables) {
-            recolectable->Dibujar(ventana);
+            recolectable->Dibujar(ventana, ObtenerTexturaRecolectable(*recolectable));
         }
 
         if (mostrandoTitulo) {
@@ -158,7 +165,7 @@ public:
             return estadoJuego;
         }
 
-        if (rondas[rondaActual]->EsRondaJefe() && enemigos.empty()) {
+        if (rondas[rondaActual]->EsRondaJefe() && enemigos.empty() && efectosMuerte.empty()) {
             estadoJuego.Asignar(EstadoJuego::Tipo::Victoria);
             musicaPrincipal.stop();
         }
@@ -171,6 +178,7 @@ public:
         }
 
         if (submarino.ObtenerBarraOxigeno().EstaAgotada()) {
+            IniciarMuerteSubmarino();
             estadoJuego.Asignar(EstadoJuego::Tipo::DerrotaOxigeno);
             musicaPrincipal.stop();
         } else if (arrecife.Destruido()) {
@@ -226,12 +234,14 @@ private:
         }
 
         texturasEnemigosCargadas =
-            texturaCangrejo.loadFromFile("assets/characters/crab.PNG") &&
-            texturaCangrejoMuerto.loadFromFile("assets/characters/crabDead.png") &&
-            texturaCalamar.loadFromFile("assets/characters/squit.png") &&
-            texturaCalamarMuerto.loadFromFile("assets/characters/squitDead.png") &&
-            texturaMedusa.loadFromFile("assets/characters/jellyfish.PNG") &&
-            texturaMedusaMuerta.loadFromFile("assets/characters/jellyfishDead.PNG");
+            texturaCangrejo.loadFromFile("assets/enemies/crab.PNG") &&
+            texturaCangrejoMuerto.loadFromFile("assets/enemies/crabDead.png") &&
+            texturaCalamar.loadFromFile("assets/enemies/squit.png") &&
+            texturaCalamarMuerto.loadFromFile("assets/enemies/squitDead.png") &&
+            texturaMedusa.loadFromFile("assets/enemies/jellyfish.PNG") &&
+            texturaMedusaMuerta.loadFromFile("assets/enemies/jellyfishDead.PNG") &&
+            texturaPezGlobo.loadFromFile("assets/enemies/pufferFish.PNG") &&
+            texturaPezGloboMuerto.loadFromFile("assets/enemies/pufferFishDead.png");
         if (texturasEnemigosCargadas) {
             texturaCangrejo.setSmooth(false);
             texturaCangrejoMuerto.setSmooth(false);
@@ -239,6 +249,28 @@ private:
             texturaCalamarMuerto.setSmooth(false);
             texturaMedusa.setSmooth(false);
             texturaMedusaMuerta.setSmooth(false);
+            texturaPezGlobo.setSmooth(false);
+            texturaPezGloboMuerto.setSmooth(false);
+        }
+
+        texturasHeroeCargadas =
+            texturaSubmarino.loadFromFile("assets/hero/submarine.PNG") &&
+            texturaSubmarinoMuerto.loadFromFile("assets/hero/submarineDead.png") &&
+            texturaTorpedo.loadFromFile("assets/hero/torpedo.png");
+        if (texturasHeroeCargadas) {
+            texturaSubmarino.setSmooth(false);
+            texturaSubmarinoMuerto.setSmooth(false);
+            texturaTorpedo.setSmooth(false);
+        }
+
+        texturasPowerUpsCargadas =
+            texturaDobleDisparo.loadFromFile("assets/powerUps/double.png") &&
+            texturaVelocidad.loadFromFile("assets/powerUps/fast.png") &&
+            texturaOxigeno.loadFromFile("assets/powerUps/oxigeno.png");
+        if (texturasPowerUpsCargadas) {
+            texturaDobleDisparo.setSmooth(false);
+            texturaVelocidad.setSmooth(false);
+            texturaOxigeno.setSmooth(false);
         }
 
         musicaPrincipalCargada = musicaPrincipal.openFromFile("assets/music/principal.ogg");
@@ -277,7 +309,7 @@ private:
         RegenerarBarreras();
 
         if (ronda.EsRondaJefe()) {
-            enemigos.push_back(std::make_unique<PulpoLeviatan>(Posicion(400.0f, 120.0f)));
+            enemigos.push_back(std::make_unique<PezGlobo>(Posicion(380.0f, 120.0f)));
             submarino.RestaurarOxigeno();
             return;
         }
@@ -417,20 +449,16 @@ private:
             return;
         }
 
-        auto* jefe = dynamic_cast<PulpoLeviatan*>(enemigos.front().get());
+        auto* jefe = dynamic_cast<PezGlobo*>(enemigos.front().get());
         if (!jefe) {
             return;
         }
 
         jefe->MoverErratico(delta, static_cast<float>(AnchoVentana));
         if (jefe->PuedeDisparar()) {
-            if (jefe->EstaEnFaseDos()) {
-                auto rafaga = jefe->DispararRafagaTriple();
-                for (auto& proyectil : rafaga) {
-                    proyectilesEnemigos.push_back(std::move(proyectil));
-                }
-            } else {
-                proyectilesEnemigos.push_back(jefe->Disparar());
+            auto rafaga = jefe->DispararRafagaTriple();
+            for (auto& proyectil : rafaga) {
+                proyectilesEnemigos.push_back(std::move(proyectil));
             }
         }
 
@@ -586,6 +614,9 @@ private:
         if (enemigo.ObtenerNombre() == "Medusa") {
             return &texturaMedusa;
         }
+        if (enemigo.ObtenerNombre() == "PezGlobo") {
+            return &texturaPezGlobo;
+        }
         return nullptr;
     }
 
@@ -605,6 +636,9 @@ private:
         }
         if (nombre == "Medusa") {
             return &texturaMedusaMuerta;
+        }
+        if (nombre == "PezGlobo") {
+            return &texturaPezGloboMuerto;
         }
         return nullptr;
     }
@@ -629,10 +663,12 @@ private:
                 {finX - inicioX, static_cast<int>(texturaTamano.y)}
             );
             sf::Sprite sprite(*textura, recorte);
-            const sf::Vector2f tamanoVisual{90.625f, 81.25f};
+            const bool esJefe = efecto.nombre == "PezGlobo";
+            const sf::Vector2f tamanoColision = esJefe ? sf::Vector2f{140.0f, 88.0f} : sf::Vector2f{65.625f, 46.875f};
+            const sf::Vector2f tamanoVisual = esJefe ? sf::Vector2f{140.0f, 88.0f} : sf::Vector2f{90.625f, 81.25f};
             sprite.setPosition({
-                efecto.posicion.x + (65.625f - tamanoVisual.x) * 0.5f,
-                efecto.posicion.y + (46.875f - tamanoVisual.y) * 0.5f
+                efecto.posicion.x + (tamanoColision.x - tamanoVisual.x) * 0.5f,
+                efecto.posicion.y + (tamanoColision.y - tamanoVisual.y) * 0.5f
             });
             sprite.setScale({
                 tamanoVisual.x / static_cast<float>(recorte.size.x),
@@ -640,6 +676,69 @@ private:
             });
             ventana.draw(sprite);
         }
+    }
+
+    void IniciarMuerteSubmarino() {
+        if (!submarinoEnMuerte) {
+            submarinoEnMuerte = true;
+            tiempoMuerteSubmarino = 0.0f;
+        }
+    }
+
+    void ActualizarMuerteSubmarino(float delta) {
+        if (submarinoEnMuerte) {
+            tiempoMuerteSubmarino = std::min(tiempoMuerteSubmarino + delta, DuracionMuerteSubmarino);
+        }
+    }
+
+    void DibujarMuerteSubmarino() {
+        if (!texturasHeroeCargadas) {
+            submarino.Dibujar(ventana);
+            return;
+        }
+
+        constexpr int CantidadCuadros = 6;
+        const int cuadro = std::min(
+            static_cast<int>(tiempoMuerteSubmarino / (DuracionMuerteSubmarino / CantidadCuadros)),
+            CantidadCuadros - 1
+        );
+        const sf::Vector2u texturaTamano = texturaSubmarinoMuerto.getSize();
+        const int inicioX = cuadro * static_cast<int>(texturaTamano.x) / CantidadCuadros;
+        const int finX = (cuadro + 1) * static_cast<int>(texturaTamano.x) / CantidadCuadros;
+        const sf::IntRect recorte(
+            {inicioX, 0},
+            {finX - inicioX, static_cast<int>(texturaTamano.y)}
+        );
+        const Posicion& posicion = submarino.ObtenerPosicion();
+        const sf::Vector2f tamanoVisual{66.0f, 80.0f};
+        sf::Sprite sprite(texturaSubmarinoMuerto, recorte);
+        sprite.setPosition({
+            posicion.x + (54.0f - tamanoVisual.x) * 0.5f,
+            posicion.y + 30.0f - tamanoVisual.y
+        });
+        sprite.setScale({
+            tamanoVisual.x / static_cast<float>(recorte.size.x),
+            tamanoVisual.y / static_cast<float>(recorte.size.y)
+        });
+        ventana.draw(sprite);
+    }
+
+    const sf::Texture* ObtenerTexturaRecolectable(const Recolectable& recolectable) const {
+        if (!texturasPowerUpsCargadas) {
+            return nullptr;
+        }
+
+        const std::string nombre = recolectable.ObtenerNombre();
+        if (nombre == "Doble disparo") {
+            return &texturaDobleDisparo;
+        }
+        if (nombre == "Velocidad aumentada") {
+            return &texturaVelocidad;
+        }
+        if (nombre == "Suministro oxigeno" || nombre == "Burbuja oxigeno") {
+            return &texturaOxigeno;
+        }
+        return nullptr;
     }
 
     void CrearPowerUpAleatorio(Posicion posicion) {
@@ -720,7 +819,7 @@ private:
             return;
         }
 
-        const auto* jefe = dynamic_cast<const PulpoLeviatan*>(enemigos.front().get());
+        const auto* jefe = dynamic_cast<const PezGlobo*>(enemigos.front().get());
         if (!jefe || jefe->Destruido()) {
             return;
         }
@@ -809,11 +908,21 @@ private:
     sf::Texture texturaCalamarMuerto;
     sf::Texture texturaMedusa;
     sf::Texture texturaMedusaMuerta;
+    sf::Texture texturaPezGlobo;
+    sf::Texture texturaPezGloboMuerto;
+    sf::Texture texturaSubmarino;
+    sf::Texture texturaSubmarinoMuerto;
+    sf::Texture texturaTorpedo;
+    sf::Texture texturaDobleDisparo;
+    sf::Texture texturaVelocidad;
+    sf::Texture texturaOxigeno;
     sf::Music musicaPrincipal;
     bool fuenteCargada{false};
     bool texturaBarreraCargada{false};
     bool texturaArrecifeCargada{false};
     bool texturasEnemigosCargadas{false};
+    bool texturasHeroeCargadas{false};
+    bool texturasPowerUpsCargadas{false};
     bool musicaPrincipalCargada{false};
 
     Submarino submarino;
@@ -834,8 +943,11 @@ private:
     std::size_t rondaActual{0};
     std::size_t cantidadBarrerasActivas{4};
     bool mostrandoTitulo{true};
+    bool submarinoEnMuerte{false};
     float direccionFormacion{1.0f};
     float temporizadorBurbuja{0.0f};
     float temporizadorPowerUpJefe{0.0f};
     float tiempoAnimacionEnemigos{0.0f};
+    float tiempoMuerteSubmarino{0.0f};
+    static constexpr float DuracionMuerteSubmarino = 1.2f;
 };

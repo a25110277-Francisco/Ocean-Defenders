@@ -104,7 +104,23 @@ public:
         velocidadAumentada.Iniciar(segundos);
     }
 
-    void Dibujar(sf::RenderWindow& ventana) const {
+    void Dibujar(sf::RenderWindow& ventana, const sf::Texture* textura = nullptr) const {
+        if (textura != nullptr) {
+            const sf::Vector2u texturaTamano = textura->getSize();
+            const sf::Vector2f tamanoVisual{66.0f, 80.0f};
+            sf::Sprite sprite(*textura);
+            sprite.setPosition({
+                posicion.x + (tamano.x - tamanoVisual.x) * 0.5f,
+                posicion.y + tamano.y - tamanoVisual.y
+            });
+            sprite.setScale({
+                tamanoVisual.x / static_cast<float>(texturaTamano.x),
+                tamanoVisual.y / static_cast<float>(texturaTamano.y)
+            });
+            ventana.draw(sprite);
+            return;
+        }
+
         sf::RectangleShape cuerpo(tamano);
         cuerpo.setPosition(posicion.ObtenerVector());
         cuerpo.setFillColor(sf::Color(35, 140, 220));

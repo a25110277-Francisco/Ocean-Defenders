@@ -47,6 +47,8 @@ El ejecutable principal se genera como `bin/OceanDefenders.exe`.
 - Visuales: primitivas SFML e imagenes PNG para las barreras.
 - Fuente principal: Pixel Digivolve, cargada desde `assets/fonts/PIXEL LETTER`.
 - Musica principal: `assets/music/principal.ogg`, reproducida en bucle durante la partida.
+- Fondo principal: `assets/stage/ocean.png`, recortado proporcionalmente sin deformarse.
+- Efectos de audio: `shotSound.ogg`, `gameOver.ogg` y `victory.ogg`.
 
 ## Creditos
 

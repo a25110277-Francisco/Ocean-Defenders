@@ -61,6 +61,15 @@ public:
         tiempoMuerteSubmarino = 0.0f;
         submarinoEnMuerte = false;
         musicaPrincipal.stop();
+        if (sonidoGameOver) {
+            sonidoGameOver->stop();
+        }
+        if (sonidoVictoria) {
+            sonidoVictoria->stop();
+        }
+        if (sonidoDisparo) {
+            sonidoDisparo->stop();
+        }
         torpedos.clear();
         proyectilesEnemigos.clear();
         recolectables.clear();
@@ -167,7 +176,7 @@ public:
 
         if (rondas[rondaActual]->EsRondaJefe() && enemigos.empty() && efectosMuerte.empty()) {
             estadoJuego.Asignar(EstadoJuego::Tipo::Victoria);
-            musicaPrincipal.stop();
+            ReproducirSonidoFinal(true);
         }
         return estadoJuego;
     }
@@ -180,15 +189,15 @@ public:
         if (submarino.ObtenerBarraOxigeno().EstaAgotada()) {
             IniciarMuerteSubmarino();
             estadoJuego.Asignar(EstadoJuego::Tipo::DerrotaOxigeno);
-            musicaPrincipal.stop();
+            ReproducirSonidoFinal(false);
         } else if (arrecife.Destruido()) {
             estadoJuego.Asignar(EstadoJuego::Tipo::DerrotaArrecife);
-            musicaPrincipal.stop();
+            ReproducirSonidoFinal(false);
         } else {
             for (const auto& enemigo : enemigos) {
                 if (enemigo->LlegoAlFondo(LimiteInvasionY)) {
                     estadoJuego.Asignar(EstadoJuego::Tipo::DerrotaInvasion);
-                    musicaPrincipal.stop();
+                    ReproducirSonidoFinal(false);
                     break;
                 }
             }
@@ -226,11 +235,15 @@ private:
 
         texturaBarreraCargada = texturaBarrera.loadFromFile("assets/stage/wall.png");
         texturaArrecifeCargada = texturaArrecife.loadFromFile("assets/stage/reef.png");
+        texturaFondoCargada = texturaFondo.loadFromFile("assets/stage/ocean.png");
         if (texturaBarreraCargada) {
             texturaBarrera.setSmooth(false);
         }
         if (texturaArrecifeCargada) {
             texturaArrecife.setSmooth(false);
+        }
+        if (texturaFondoCargada) {
+            texturaFondo.setSmooth(false);
         }
 
         texturasEnemigosCargadas =
@@ -277,6 +290,19 @@ private:
         if (musicaPrincipalCargada) {
             musicaPrincipal.setLooping(true);
             musicaPrincipal.setVolume(35.0f);
+        }
+
+        if (bufferGameOver.loadFromFile("assets/music/gameOver.ogg")) {
+            sonidoGameOver.emplace(bufferGameOver);
+            sonidoGameOver->setVolume(70.0f);
+        }
+        if (bufferVictoria.loadFromFile("assets/music/victory.ogg")) {
+            sonidoVictoria.emplace(bufferVictoria);
+            sonidoVictoria->setVolume(70.0f);
+        }
+        if (bufferDisparo.loadFromFile("assets/music/shotSound.ogg")) {
+            sonidoDisparo.emplace(bufferDisparo);
+            sonidoDisparo->setVolume(45.0f);
         }
     }
 
@@ -402,6 +428,10 @@ private:
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
             auto nuevosTorpedos = submarino.DispararTorpedos();
+            if (!nuevosTorpedos.empty() && sonidoDisparo) {
+                sonidoDisparo->stop();
+                sonidoDisparo->play();
+            }
             for (auto& torpedo : nuevosTorpedos) {
                 torpedos.push_back(torpedo);
             }
@@ -775,21 +805,55 @@ private:
         return distribucion(generador);
     }
 
+    void ReproducirSonidoFinal(bool victoria) {
+        musicaPrincipal.stop();
+        if (victoria) {
+            if (sonidoGameOver) {
+                sonidoGameOver->stop();
+            }
+            if (sonidoVictoria) {
+                sonidoVictoria->play();
+            }
+        } else {
+            if (sonidoVictoria) {
+                sonidoVictoria->stop();
+            }
+            if (sonidoGameOver) {
+                sonidoGameOver->play();
+            }
+        }
+    }
+
     void DibujarFondo() {
-        sf::RectangleShape zonaJuego({static_cast<float>(AnchoVentana), static_cast<float>(AltoVentana)});
-        zonaJuego.setPosition({0.0f, 0.0f});
-        zonaJuego.setFillColor(sf::Color(7, 38, 78));
-        ventana.draw(zonaJuego);
+        if (texturaFondoCargada) {
+            const sf::Vector2u tamanoTextura = texturaFondo.getSize();
+            const float proporcionJuego = static_cast<float>(AnchoVentana) / static_cast<float>(AltoVentana);
+            const int anchoRecorte = std::min(
+                static_cast<int>(tamanoTextura.x),
+                static_cast<int>(static_cast<float>(tamanoTextura.y) * proporcionJuego)
+            );
+            const int inicioX = (static_cast<int>(tamanoTextura.x) - anchoRecorte) / 2;
+            const sf::IntRect recorte(
+                {inicioX, 0},
+                {anchoRecorte, static_cast<int>(tamanoTextura.y)}
+            );
+            sf::Sprite fondo(texturaFondo, recorte);
+            fondo.setScale({
+                static_cast<float>(AnchoVentana) / static_cast<float>(anchoRecorte),
+                static_cast<float>(AltoVentana) / static_cast<float>(tamanoTextura.y)
+            });
+            ventana.draw(fondo);
+        } else {
+            sf::RectangleShape zonaJuego({static_cast<float>(AnchoVentana), static_cast<float>(AltoVentana)});
+            zonaJuego.setPosition({0.0f, 0.0f});
+            zonaJuego.setFillColor(sf::Color(7, 38, 78));
+            ventana.draw(zonaJuego);
+        }
 
         sf::RectangleShape hud({static_cast<float>(AnchoVentana), 76.0f});
         hud.setPosition({0.0f, 0.0f});
-        hud.setFillColor(sf::Color(10, 24, 42));
+        hud.setFillColor(sf::Color(10, 24, 42, 225));
         ventana.draw(hud);
-
-        sf::RectangleShape fondo({static_cast<float>(AnchoVentana), 28.0f});
-        fondo.setPosition({0.0f, 672.0f});
-        fondo.setFillColor(sf::Color(32, 80, 72));
-        ventana.draw(fondo);
 
         for (int i = 0; i < 12; ++i) {
             sf::CircleShape burbuja(2.0f + static_cast<float>(i % 4));
@@ -911,6 +975,7 @@ private:
     sf::Font fuente;
     sf::Texture texturaBarrera;
     sf::Texture texturaArrecife;
+    sf::Texture texturaFondo;
     sf::Texture texturaCangrejo;
     sf::Texture texturaCangrejoMuerto;
     sf::Texture texturaCalamar;
@@ -926,9 +991,16 @@ private:
     sf::Texture texturaVelocidad;
     sf::Texture texturaOxigeno;
     sf::Music musicaPrincipal;
+    sf::SoundBuffer bufferGameOver;
+    sf::SoundBuffer bufferVictoria;
+    sf::SoundBuffer bufferDisparo;
+    std::optional<sf::Sound> sonidoGameOver;
+    std::optional<sf::Sound> sonidoVictoria;
+    std::optional<sf::Sound> sonidoDisparo;
     bool fuenteCargada{false};
     bool texturaBarreraCargada{false};
     bool texturaArrecifeCargada{false};
+    bool texturaFondoCargada{false};
     bool texturasEnemigosCargadas{false};
     bool texturasHeroeCargadas{false};
     bool texturasPowerUpsCargadas{false};

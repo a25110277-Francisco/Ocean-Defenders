@@ -664,16 +664,25 @@ private:
             );
             sf::Sprite sprite(*textura, recorte);
             const bool esJefe = efecto.nombre == "PezGlobo";
-            const sf::Vector2f tamanoColision = esJefe ? sf::Vector2f{140.0f, 88.0f} : sf::Vector2f{65.625f, 46.875f};
-            const sf::Vector2f tamanoVisual = esJefe ? sf::Vector2f{140.0f, 88.0f} : sf::Vector2f{90.625f, 81.25f};
+            const sf::Vector2f tamanoColision = esJefe ? sf::Vector2f{130.0f, 130.0f} : sf::Vector2f{65.625f, 46.875f};
+            sf::Vector2f tamanoVisual{90.625f, 81.25f};
+            if (esJefe) {
+                const float escala = std::min(
+                    tamanoColision.x / static_cast<float>(recorte.size.x),
+                    tamanoColision.y / static_cast<float>(recorte.size.y)
+                );
+                tamanoVisual = {
+                    static_cast<float>(recorte.size.x) * escala,
+                    static_cast<float>(recorte.size.y) * escala
+                };
+            }
             sprite.setPosition({
                 efecto.posicion.x + (tamanoColision.x - tamanoVisual.x) * 0.5f,
                 efecto.posicion.y + (tamanoColision.y - tamanoVisual.y) * 0.5f
             });
-            sprite.setScale({
-                tamanoVisual.x / static_cast<float>(recorte.size.x),
-                tamanoVisual.y / static_cast<float>(recorte.size.y)
-            });
+            const float escalaX = tamanoVisual.x / static_cast<float>(recorte.size.x);
+            const float escalaY = tamanoVisual.y / static_cast<float>(recorte.size.y);
+            sprite.setScale(esJefe ? sf::Vector2f{escalaX, escalaX} : sf::Vector2f{escalaX, escalaY});
             ventana.draw(sprite);
         }
     }
@@ -797,7 +806,7 @@ private:
         DibujarBarra({24.0f, 48.0f}, {190.0f, 16.0f}, arrecife.ObtenerVida().ObtenerPorcentaje(), sf::Color(80, 220, 150));
 
         DibujarTexto("Oxigeno " + std::to_string(submarino.ObtenerBarraOxigeno().ObtenerActual()) + "/100", {225.0f, 11.0f}, 16);
-        DibujarTexto("Arrecife " + std::to_string(arrecife.ObtenerVida().ObtenerActual()) + "/1300", {225.0f, 41.0f}, 16);
+        DibujarTexto("Arrecife " + std::to_string(arrecife.ObtenerVida().ObtenerActual()) + "/1000", {225.0f, 41.0f}, 16);
         DibujarTexto("Puntaje " + std::to_string(puntaje.ObtenerValor()), {475.0f, 18.0f}, 18);
         DibujarTexto("Ronda " + std::to_string(rondas[rondaActual]->ObtenerNumero()) + ": " + rondas[rondaActual]->ObtenerNombre(), {475.0f, 44.0f}, 16);
     }

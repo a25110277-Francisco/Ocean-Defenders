@@ -24,7 +24,7 @@ El ejecutable principal se genera como `bin/OceanDefenders.exe`.
 
 - El submarino solo se mueve horizontalmente y dispara cada 0.5 segundos.
 - El oxigeno inicia en 100, pierde 2 puntos cada 5 segundos y baja al recibir proyectiles enemigos.
-- El arrecife inicia con 1300 HP y no se regenera entre rondas.
+- El arrecife inicia con 1000 HP y no se regenera entre rondas.
 - El arrecife usa la imagen completa `reef.png`, sin etapas de destruccion. Su barra de vida se muestra solamente en el HUD superior.
 - Las barreras usan las 6 etapas de destruccion incluidas en `wall.png`, conservando la proporcion original del sprite.
 - Hay 4 barreras en la ronda 1, 3 en la ronda 2 y 2 en las rondas 3 y 4.

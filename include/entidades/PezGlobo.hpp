@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include "entidades/Jefe.hpp"
 
@@ -7,7 +8,7 @@ class PezGlobo : public Jefe {
 public:
     explicit PezGlobo(Posicion posicionInicial = Posicion(380.0f, 120.0f)) : Jefe(posicionInicial) {
         nombre = "PezGlobo";
-        tamano = {140.0f, 88.0f};
+        tamano = {130.0f, 130.0f};
     }
 
     void MoverErratico(float delta, float anchoVentana) {
@@ -62,11 +63,19 @@ public:
             {finX - inicioX, static_cast<int>(texturaTamano.y)}
         );
         sf::Sprite sprite(*textura, recorte);
-        sprite.setPosition(posicion.ObtenerVector());
-        sprite.setScale({
+        const float escala = std::min(
             tamano.x / static_cast<float>(recorte.size.x),
             tamano.y / static_cast<float>(recorte.size.y)
+        );
+        const sf::Vector2f tamanoVisual{
+            static_cast<float>(recorte.size.x) * escala,
+            static_cast<float>(recorte.size.y) * escala
+        };
+        sprite.setPosition({
+            posicion.x + (tamano.x - tamanoVisual.x) * 0.5f,
+            posicion.y + (tamano.y - tamanoVisual.y) * 0.5f
         });
+        sprite.setScale({escala, escala});
         ventana.draw(sprite);
     }
 

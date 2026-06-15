@@ -33,7 +33,7 @@ public:
         }
 
         const sf::Vector2u texturaTamano = textura->getSize();
-        const sf::Vector2f tamanoVisual{48.0f, 48.0f};
+        const sf::Vector2f tamanoVisual{72.0f, 72.0f};
         sf::Sprite sprite(*textura);
         sprite.setPosition({
             posicion.x + (tamano.x - tamanoVisual.x) * 0.5f,

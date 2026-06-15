@@ -59,17 +59,16 @@ public:
 
         if (textura != nullptr) {
             const sf::Vector2u texturaTamano = textura->getSize();
-            constexpr int CantidadEtapas = 8;
-            const int etapa = std::clamp(
-                CantidadEtapas - static_cast<int>(vida.ObtenerPorcentaje() * CantidadEtapas + 0.99f),
-                0,
-                CantidadEtapas - 1
-            );
+            constexpr int CantidadEtapas = 6;
+            const int impactosRecibidos = (vida.ObtenerMaxima() - vida.ObtenerActual()) / 5;
+            const int etapa = std::clamp(impactosRecibidos, 0, CantidadEtapas - 1);
             const int inicioX = etapa * static_cast<int>(texturaTamano.x) / CantidadEtapas;
             const int finX = (etapa + 1) * static_cast<int>(texturaTamano.x) / CantidadEtapas;
+            const int recorteY = static_cast<int>(static_cast<float>(texturaTamano.y) * 0.29f);
+            const int recorteAlto = static_cast<int>(static_cast<float>(texturaTamano.y) * 0.42f);
             const sf::IntRect recorte(
-                {inicioX, 0},
-                {finX - inicioX, static_cast<int>(texturaTamano.y)}
+                {inicioX, recorteY},
+                {finX - inicioX, recorteAlto}
             );
 
             sf::Sprite sprite(*textura, recorte);
@@ -110,5 +109,5 @@ private:
     Vida vida;
     Posicion posicion;
     EstadoBarrera estadoBarrera;
-    sf::Vector2f tamano{110.0f, 70.0f};
+    sf::Vector2f tamano{120.0f, 100.0f};
 };

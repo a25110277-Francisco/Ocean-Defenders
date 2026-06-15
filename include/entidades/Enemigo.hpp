@@ -85,7 +85,7 @@ public:
                 {finX - inicioX, static_cast<int>(texturaTamano.y)}
             );
             sf::Sprite sprite(*textura, recorte);
-            const sf::Vector2f tamanoVisual{54.0f, 48.0f};
+            const sf::Vector2f tamanoVisual{67.5f, 60.0f};
             sprite.setPosition({
                 posicion.x + (tamano.x - tamanoVisual.x) * 0.5f,
                 posicion.y + (tamano.y - tamanoVisual.y) * 0.5f
@@ -159,5 +159,5 @@ protected:
     std::string nombre;
     sf::Color color;
     int puntaje{0};
-    sf::Vector2f tamano{42.0f, 30.0f};
+    sf::Vector2f tamano{52.5f, 37.5f};
 };

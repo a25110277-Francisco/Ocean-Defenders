@@ -299,8 +299,8 @@ private:
 
         const float separacion = static_cast<float>(AnchoVentana) / static_cast<float>(cantidadBarrerasActivas + 1);
         for (std::size_t i = 0; i < cantidadBarrerasActivas; ++i) {
-            const float posicionX = separacion * static_cast<float>(i + 1) - 55.0f;
-            barreras[i] = BarreraCoral(Posicion(posicionX, 490.0f));
+            const float posicionX = separacion * static_cast<float>(i + 1) - 60.0f;
+            barreras[i] = BarreraCoral(Posicion(posicionX, 478.0f));
         }
     }
 
@@ -314,7 +314,7 @@ private:
     Posicion PosicionEnFormacion(int indice, int filaInicial) const {
         const int columna = indice % 7;
         const int fila = filaInicial + indice / 7;
-        return {120.0f + static_cast<float>(columna) * 92.0f, 100.0f + static_cast<float>(fila) * 54.0f};
+        return {105.0f + static_cast<float>(columna) * 100.0f, 100.0f + static_cast<float>(fila) * 68.0f};
     }
 
     void AgregarGrupoMedusas(int cantidad, int filaInicial) {
@@ -629,10 +629,10 @@ private:
                 {finX - inicioX, static_cast<int>(texturaTamano.y)}
             );
             sf::Sprite sprite(*textura, recorte);
-            const sf::Vector2f tamanoVisual{58.0f, 52.0f};
+            const sf::Vector2f tamanoVisual{72.5f, 65.0f};
             sprite.setPosition({
-                efecto.posicion.x + (42.0f - tamanoVisual.x) * 0.5f,
-                efecto.posicion.y + (30.0f - tamanoVisual.y) * 0.5f
+                efecto.posicion.x + (52.5f - tamanoVisual.x) * 0.5f,
+                efecto.posicion.y + (37.5f - tamanoVisual.y) * 0.5f
             });
             sprite.setScale({
                 tamanoVisual.x / static_cast<float>(recorte.size.x),

@@ -208,7 +208,7 @@ Perfecto, agrego la sección de barreras con temática submarina coherente con t
 
 Formaciones de coral que sirven como escudos entre el jugador y los enemigos. Absorben los proyectiles enemigos. Los torpedos del jugador las atraviesan sin causar dano.
 
-Las barreras utilizan las 8 etapas de destruccion incluidas en `wall.png`. Cada impacto avanza a la siguiente etapa.
+Las barreras utilizan las 6 etapas de destruccion incluidas en `wall.png` y conservan la proporcion original del sprite.
 
 ## **Características** 
 

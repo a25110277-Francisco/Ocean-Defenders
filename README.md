@@ -32,6 +32,7 @@ El ejecutable principal se genera como `bin/OceanDefenders.exe`.
 - Cangrejos, calamares y medusas usan animaciones de movimiento de 4 cuadros y animaciones `Dead` de 4 cuadros al ser eliminados.
 - Los enemigos normales recibieron un segundo aumento de 25% en su tamaño.
 - La ronda 4 enfrenta al Pez Globo, que se mueve libremente y dispara tres triangulos rojos por rafaga.
+- Entre rondas aparece una pausa de 3 segundos antes de iniciar la siguiente formacion.
 - El submarino, sus torpedos, el jefe y los power-ups utilizan sus imagenes PNG correspondientes.
 - El submarino reproduce su animacion `Dead` cuando se agota el oxigeno.
 - La bandera roja marca el limite de invasion: pierdes cuando un enemigo la cruza.

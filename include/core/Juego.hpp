@@ -59,7 +59,9 @@ public:
         temporizadorPowerUpJefe = 0.0f;
         tiempoAnimacionEnemigos = 0.0f;
         tiempoMuerteSubmarino = 0.0f;
+        tiempoPausaRonda = 0.0f;
         submarinoEnMuerte = false;
+        enPausaEntreRondas = false;
         musicaPrincipal.stop();
         if (sonidoGameOver) {
             sonidoGameOver->stop();
@@ -95,6 +97,14 @@ public:
     }
 
     void Actualizar(float delta) {
+        if (enPausaEntreRondas) {
+            tiempoPausaRonda += delta;
+            if (tiempoPausaRonda >= DuracionPausaRonda) {
+                CambiarRonda();
+            }
+            return;
+        }
+
         temporizador.Actualizar(delta);
         tiempoAnimacionEnemigos += delta;
         ProcesarInput(delta);
@@ -142,7 +152,9 @@ public:
             recolectable->Dibujar(ventana, ObtenerTexturaRecolectable(*recolectable));
         }
 
-        if (mostrandoTitulo) {
+        if (enPausaEntreRondas) {
+            DibujarPausaEntreRondas();
+        } else if (mostrandoTitulo) {
             DibujarPantallaTitulo();
         } else if (estadoJuego.Termino()) {
             DibujarPantallaFinal();
@@ -166,6 +178,8 @@ public:
         efectosMuerte.clear();
         temporizadorBurbuja = 0.0f;
         temporizadorPowerUpJefe = 0.0f;
+        tiempoPausaRonda = 0.0f;
+        enPausaEntreRondas = false;
         CrearRondaActual();
     }
 
@@ -210,6 +224,7 @@ private:
     static constexpr unsigned int AltoVentana = 700;
     static constexpr float LimiteInvasionY = 595.0f;
     static constexpr float DuracionMuerte = 0.8f;
+    static constexpr float DuracionPausaRonda = 3.0f;
 
     struct EfectoMuerte {
         std::string nombre;
@@ -300,9 +315,22 @@ private:
             sonidoVictoria.emplace(bufferVictoria);
             sonidoVictoria->setVolume(70.0f);
         }
-        if (bufferDisparo.loadFromFile("assets/music/shotSound.ogg")) {
+        sf::SoundBuffer bufferDisparoOriginal;
+        if (bufferDisparoOriginal.loadFromFile("assets/music/shotSound.ogg")) {
+            const unsigned int canales = bufferDisparoOriginal.getChannelCount();
+            const std::uint64_t muestrasIniciales =
+                static_cast<std::uint64_t>(0.80f * static_cast<float>(bufferDisparoOriginal.getSampleRate())) * canales;
+            const std::uint64_t totalMuestras = bufferDisparoOriginal.getSampleCount();
+            const std::uint64_t inicio = std::min(muestrasIniciales, totalMuestras);
+            if (bufferDisparo.loadFromSamples(
+                    bufferDisparoOriginal.getSamples() + inicio,
+                    totalMuestras - inicio,
+                    canales,
+                    bufferDisparoOriginal.getSampleRate(),
+                    bufferDisparoOriginal.getChannelMap())) {
             sonidoDisparo.emplace(bufferDisparo);
             sonidoDisparo->setVolume(45.0f);
+            }
         }
     }
 
@@ -429,7 +457,6 @@ private:
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)) {
             auto nuevosTorpedos = submarino.DispararTorpedos();
             if (!nuevosTorpedos.empty() && sonidoDisparo) {
-                sonidoDisparo->stop();
                 sonidoDisparo->play();
             }
             for (auto& torpedo : nuevosTorpedos) {
@@ -626,9 +653,18 @@ private:
             return enemigo->Destruido();
         }), enemigos.end());
 
-        if (estadoJuego.EstaJugando() && enemigos.empty() && efectosMuerte.empty() && !rondas[rondaActual]->EsRondaJefe()) {
-            CambiarRonda();
+        if (estadoJuego.EstaJugando() && !enPausaEntreRondas && enemigos.empty() &&
+            efectosMuerte.empty() && !rondas[rondaActual]->EsRondaJefe()) {
+            IniciarPausaEntreRondas();
         }
+    }
+
+    void IniciarPausaEntreRondas() {
+        enPausaEntreRondas = true;
+        tiempoPausaRonda = 0.0f;
+        torpedos.clear();
+        proyectilesEnemigos.clear();
+        recolectables.clear();
     }
 
     const sf::Texture* ObtenerTexturaMovimiento(const Enemigo& enemigo) const {
@@ -955,8 +991,21 @@ private:
         capa.setFillColor(sf::Color(0, 0, 0, 150));
         ventana.draw(capa);
 
-        DibujarTexto(estadoJuego.ObtenerMensaje(), {210.0f, 300.0f}, 28, sf::Color(245, 250, 255));
-        DibujarTexto("ENTER PARA REGRESAR A LA PANTALLA DEL TITULO", {175.0f, 345.0f}, 20, sf::Color(180, 230, 255));
+        const float centroX = static_cast<float>(AnchoVentana) * 0.5f;
+        DibujarTextoCentrado(estadoJuego.ObtenerMensaje(), centroX, 300.0f, 28, sf::Color(245, 250, 255));
+        DibujarTextoCentrado("ENTER PARA REGRESAR A LA PANTALLA DEL TITULO", centroX, 345.0f, 20, sf::Color(180, 230, 255));
+    }
+
+    void DibujarPausaEntreRondas() {
+        sf::RectangleShape capa({static_cast<float>(AnchoVentana), static_cast<float>(AltoVentana)});
+        capa.setPosition({0.0f, 0.0f});
+        capa.setFillColor(sf::Color(0, 0, 0, 135));
+        ventana.draw(capa);
+
+        const int segundosRestantes = std::max(1, static_cast<int>(std::ceil(DuracionPausaRonda - tiempoPausaRonda)));
+        const float centroX = static_cast<float>(AnchoVentana) * 0.5f;
+        DibujarTextoCentrado("LISTO PARA LA SIGUIENTE RONDA?", centroX, 295.0f, 25, sf::Color(220, 250, 255));
+        DibujarTextoCentrado(std::to_string(segundosRestantes), centroX, 345.0f, 42, sf::Color(130, 235, 255));
     }
 
     void DibujarPantallaTitulo() {
@@ -1025,10 +1074,12 @@ private:
     std::size_t cantidadBarrerasActivas{4};
     bool mostrandoTitulo{true};
     bool submarinoEnMuerte{false};
+    bool enPausaEntreRondas{false};
     float direccionFormacion{1.0f};
     float temporizadorBurbuja{0.0f};
     float temporizadorPowerUpJefe{0.0f};
     float tiempoAnimacionEnemigos{0.0f};
     float tiempoMuerteSubmarino{0.0f};
+    float tiempoPausaRonda{0.0f};
     static constexpr float DuracionMuerteSubmarino = 1.2f;
 };

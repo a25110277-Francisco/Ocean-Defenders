@@ -2,7 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <algorithm>
-#include <array>
 #include "componentes/Posicion.hpp"
 #include "componentes/Vida.hpp"
 #include "core/EstadoJuego.hpp"
@@ -34,53 +33,28 @@ public:
         }
 
         if (textura != nullptr) {
-            constexpr int CantidadFragmentos = 12;
-            constexpr std::array<int, CantidadFragmentos> ordenDestruccion{5, 1, 9, 3, 11, 7, 0, 10, 4, 8, 2, 6};
-            const int fragmentosVisibles = std::clamp(
-                static_cast<int>(vida.ObtenerPorcentaje() * CantidadFragmentos + 0.99f),
-                1,
-                CantidadFragmentos
-            );
+            constexpr int CantidadEtapas = 6;
             const sf::Vector2u texturaTamano = textura->getSize();
-            const int anchoFuente = static_cast<int>(texturaTamano.x) / CantidadFragmentos;
-            const float anchoDestino = tamano.x / static_cast<float>(CantidadFragmentos);
+            const int etapa = std::clamp(
+                CantidadEtapas - static_cast<int>(vida.ObtenerPorcentaje() * CantidadEtapas + 0.99f),
+                0,
+                CantidadEtapas - 1
+            );
+            const int inicioY = etapa * static_cast<int>(texturaTamano.y) / CantidadEtapas;
+            const int finY = (etapa + 1) * static_cast<int>(texturaTamano.y) / CantidadEtapas;
             const float altoVisual = 88.0f;
             const float posicionVisualY = posicion.y + tamano.y - altoVisual;
-
-            sf::Color color = sf::Color::White;
-            if (vida.ObtenerPorcentaje() <= 0.35f) {
-                color = sf::Color(125, 125, 125);
-            } else if (vida.ObtenerPorcentaje() <= 0.70f) {
-                color = sf::Color(190, 190, 190);
-            }
-
-            for (int fragmento = 0; fragmento < CantidadFragmentos; ++fragmento) {
-                const auto posicionOrden = std::find(ordenDestruccion.begin(), ordenDestruccion.end(), fragmento);
-                const int etapaDestruccion = static_cast<int>(std::distance(ordenDestruccion.begin(), posicionOrden));
-                if (etapaDestruccion >= fragmentosVisibles) {
-                    continue;
-                }
-
-                const int fuenteX = fragmento * anchoFuente;
-                const int anchoActual = fragmento == CantidadFragmentos - 1
-                    ? static_cast<int>(texturaTamano.x) - fuenteX
-                    : anchoFuente;
-                const sf::IntRect recorte(
-                    {fuenteX, 0},
-                    {anchoActual, static_cast<int>(texturaTamano.y)}
-                );
-                sf::Sprite sprite(*textura, recorte);
-                sprite.setPosition({
-                    posicion.x + anchoDestino * static_cast<float>(fragmento),
-                    posicionVisualY + (fragmento % 3 == 0 ? 3.0f : 0.0f)
-                });
-                sprite.setScale({
-                    anchoDestino / static_cast<float>(anchoActual),
-                    altoVisual / static_cast<float>(texturaTamano.y)
-                });
-                sprite.setColor(color);
-                ventana.draw(sprite);
-            }
+            const sf::IntRect recorte(
+                {0, inicioY},
+                {static_cast<int>(texturaTamano.x), finY - inicioY}
+            );
+            sf::Sprite sprite(*textura, recorte);
+            sprite.setPosition({posicion.x, posicionVisualY});
+            sprite.setScale({
+                tamano.x / static_cast<float>(recorte.size.x),
+                altoVisual / static_cast<float>(recorte.size.y)
+            });
+            ventana.draw(sprite);
             return;
         }
 

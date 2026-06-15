@@ -37,7 +37,7 @@ public:
         return std::make_unique<DobleDisparo>(ObtenerPosicionDisparo());
     }
 
-    void Dibujar(sf::RenderWindow& ventana) const override {
+    void Dibujar(sf::RenderWindow& ventana, const sf::Texture* = nullptr, float = 0.0f) const override {
         if (vida.EstaAgotada()) {
             return;
         }

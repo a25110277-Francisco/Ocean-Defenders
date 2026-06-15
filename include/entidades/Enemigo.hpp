@@ -69,8 +69,32 @@ public:
         cadenciaDisparo.Reiniciar();
     }
 
-    virtual void Dibujar(sf::RenderWindow& ventana) const {
+    virtual void Dibujar(sf::RenderWindow& ventana, const sf::Texture* textura = nullptr, float tiempoAnimacion = 0.0f) const {
         if (vida.EstaAgotada()) {
+            return;
+        }
+
+        if (textura != nullptr) {
+            constexpr int CantidadCuadros = 4;
+            const sf::Vector2u texturaTamano = textura->getSize();
+            const int cuadro = static_cast<int>(tiempoAnimacion / 0.16f) % CantidadCuadros;
+            const int inicioX = cuadro * static_cast<int>(texturaTamano.x) / CantidadCuadros;
+            const int finX = (cuadro + 1) * static_cast<int>(texturaTamano.x) / CantidadCuadros;
+            const sf::IntRect recorte(
+                {inicioX, 0},
+                {finX - inicioX, static_cast<int>(texturaTamano.y)}
+            );
+            sf::Sprite sprite(*textura, recorte);
+            const sf::Vector2f tamanoVisual{54.0f, 48.0f};
+            sprite.setPosition({
+                posicion.x + (tamano.x - tamanoVisual.x) * 0.5f,
+                posicion.y + (tamano.y - tamanoVisual.y) * 0.5f
+            });
+            sprite.setScale({
+                tamanoVisual.x / static_cast<float>(recorte.size.x),
+                tamanoVisual.y / static_cast<float>(recorte.size.y)
+            });
+            ventana.draw(sprite);
             return;
         }
 

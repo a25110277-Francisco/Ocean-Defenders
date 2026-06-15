@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <array>
 #include <algorithm>
 #include "componentes/Posicion.hpp"
 #include "componentes/Vida.hpp"
@@ -60,42 +59,26 @@ public:
 
         if (textura != nullptr) {
             const sf::Vector2u texturaTamano = textura->getSize();
-            const int recorteY = static_cast<int>(static_cast<float>(texturaTamano.y) * 0.20f);
-            const int recorteAlto = static_cast<int>(static_cast<float>(texturaTamano.y) * 0.62f);
-            constexpr int CantidadFragmentos = 8;
-            constexpr std::array<int, CantidadFragmentos> ordenDestruccion{1, 6, 3, 7, 0, 5, 2, 4};
-            const int fragmentosVisibles = std::clamp(
-                static_cast<int>(vida.ObtenerPorcentaje() * CantidadFragmentos + 0.99f),
-                1,
-                CantidadFragmentos
+            constexpr int CantidadEtapas = 8;
+            const int etapa = std::clamp(
+                CantidadEtapas - static_cast<int>(vida.ObtenerPorcentaje() * CantidadEtapas + 0.99f),
+                0,
+                CantidadEtapas - 1
             );
-            const int anchoFuente = static_cast<int>(texturaTamano.x) / CantidadFragmentos;
-            const float anchoDestino = tamano.x / static_cast<float>(CantidadFragmentos);
+            const int inicioX = etapa * static_cast<int>(texturaTamano.x) / CantidadEtapas;
+            const int finX = (etapa + 1) * static_cast<int>(texturaTamano.x) / CantidadEtapas;
+            const sf::IntRect recorte(
+                {inicioX, 0},
+                {finX - inicioX, static_cast<int>(texturaTamano.y)}
+            );
 
-            for (int fragmento = 0; fragmento < CantidadFragmentos; ++fragmento) {
-                const auto posicionOrden = std::find(ordenDestruccion.begin(), ordenDestruccion.end(), fragmento);
-                const int etapaDestruccion = static_cast<int>(std::distance(ordenDestruccion.begin(), posicionOrden));
-                if (etapaDestruccion >= fragmentosVisibles) {
-                    continue;
-                }
-
-                const int fuenteX = fragmento * anchoFuente;
-                const int anchoActual = fragmento == CantidadFragmentos - 1
-                    ? static_cast<int>(texturaTamano.x) - fuenteX
-                    : anchoFuente;
-                const sf::IntRect recorte({fuenteX, recorteY}, {anchoActual, recorteAlto});
-                sf::Sprite sprite(*textura, recorte);
-                sprite.setPosition({
-                    posicion.x + anchoDestino * static_cast<float>(fragmento),
-                    posicion.y + (fragmento % 2 == 0 ? 0.0f : 2.0f)
-                });
-                sprite.setScale({
-                    anchoDestino / static_cast<float>(anchoActual),
-                    tamano.y / static_cast<float>(recorteAlto)
-                });
-                sprite.setColor(color);
-                ventana.draw(sprite);
-            }
+            sf::Sprite sprite(*textura, recorte);
+            sprite.setPosition(posicion.ObtenerVector());
+            sprite.setScale({
+                tamano.x / static_cast<float>(recorte.size.x),
+                tamano.y / static_cast<float>(recorte.size.y)
+            });
+            ventana.draw(sprite);
             return;
         }
 

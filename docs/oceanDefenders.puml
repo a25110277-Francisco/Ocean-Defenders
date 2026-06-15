@@ -11,7 +11,7 @@ class Medusa
 class Calamar
 class Cangrejo
 class Jefe
-class PulpoLeviatan
+class PezGlobo
 
 class Proyectil
 class Torpedo
@@ -52,7 +52,7 @@ Enemigo <|-- Medusa
 Enemigo <|-- Calamar
 Enemigo <|-- Cangrejo
 Enemigo <|-- Jefe
-Jefe <|-- PulpoLeviatan
+Jefe <|-- PezGlobo
 
 Proyectil <|-- Torpedo
 Proyectil <|-- ProyectilEnemigo
@@ -115,9 +115,8 @@ Enemigo "1" *-- "1" ProbabilidadPowerUp
 Enemigo "0..*" o-- "0..*" ProyectilEnemigo
 Enemigo "0..*" o-- "0..1" PowerUp
 
-PulpoLeviatan "1" *-- "1" FaseJefe
-PulpoLeviatan "1" o-- "0..*" ProyectilJefe
-PulpoLeviatan "1" o-- "0..*" PowerUp
+PezGlobo "1" o-- "0..*" ProyectilJefe
+PezGlobo "1" o-- "0..*" PowerUp
 
 Proyectil "1" *-- "1" DanoVida
 Proyectil "1" *-- "1" Posicion
@@ -152,7 +151,7 @@ AsaltoMasivo "1" *-- "7" Medusa
 AsaltoMasivo "1" *-- "7" Calamar
 AsaltoMasivo "1" *-- "7" Cangrejo
 
-RondaJefe "1" *-- "1" PulpoLeviatan
+RondaJefe "1" *-- "1" PezGlobo
 
 class Juego {
     - Submarino submarino
@@ -222,8 +221,7 @@ class Jefe {
     + LanzarPowerUp() : PowerUp
 }
 
-class PulpoLeviatan {
-    - FaseJefe faseJefe
+class PezGlobo {
     + MoverErratico()
 }
 
@@ -331,11 +329,10 @@ Velocidad: lenta.
 Disparo: cada 2 segundos.
 end note
 
-note right of PulpoLeviatan
+note right of PezGlobo
 Vida: 200 HP.
 Daño: -25 oxígeno.
-Fase 1: disparos rectos.
-Fase 2: ráfagas de 3 proyectiles.
+Dispara ráfagas de 3 triángulos rojos.
 Aparece en ronda 4.
 end note
 
@@ -386,7 +383,7 @@ end note
 
 note right of RondaJefe
 Ronda 4.
-Jefe final: PulpoLeviatan.
+Jefe final: PezGlobo.
 2 barreras.
 Condición de victoria: derrotar al jefe.
 Oxígeno se regenera al comenzar.

@@ -32,7 +32,7 @@ Juego basado en el clásico Space Invaders, programado en C++ con programación 
 
    - Cangrejo: -20 oxígeno 
 
-   - Pulpo Leviatán (jefe): -25 oxígeno 
+   - Pez Globo (jefe): -25 oxígeno
 
 - **Regeneración:** 
 
@@ -90,7 +90,7 @@ El juego termina si:
 
 - Al ser destruidos, tienen 20% de probabilidad de soltar un power-up 
 
-## **JEFE FINAL: PULPO LEVIATÁN** 
+## **JEFE FINAL: PEZ GLOBO**
 
 - **Vida:** 200 HP 
 
@@ -98,11 +98,7 @@ El juego termina si:
 
 - 
 
-   - **Patrón de ataque:** 
-
-      - Fase 1 (200-100 HP): Dispara proyectiles en línea recta 
-
-      - Fase 2 (100-0 HP): Dispara ráfagas de 3 proyectiles 
+   - **Patrón de ataque:** Dispara ráfagas de 3 triángulos rojos
 
 - 
 
@@ -176,7 +172,9 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 
 - **Barreras:** 2 barreras regeneradas completamente
 
-- **Enemigo:** Pulpo Leviatán 
+- **Enemigo:** Pez Globo
+
+- **Ataque:** Ráfaga de 3 triángulos rojos
 
 - **Condición de victoria:** Derrotar al jefe 
 
@@ -184,13 +182,13 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 
 **Nota importante:** El arrecife mantiene el daño acumulado de todas las rondas anteriores. 
 
-El arrecife utiliza las 5 etapas de destruccion incluidas en `reef.png`, una por cada tramo de 260 puntos de vida. La barra de vida se muestra unicamente en el HUD superior.
+El arrecife utiliza la imagen completa `reef.png` y no tiene etapas de destruccion. La barra de vida se muestra unicamente en el HUD superior.
 
 ## **CONDICIONES DE VICTORIA Y DERROTA** 
 
 ## **Victoria** 
 
-Completar las 4 rondas derrotando al Pulpo Leviatán. 
+Completar las 4 rondas derrotando al Pez Globo.
 
 ## **Derrota** 
 

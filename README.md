@@ -25,13 +25,15 @@ El ejecutable principal se genera como `bin/OceanDefenders.exe`.
 - El submarino solo se mueve horizontalmente y dispara cada 0.5 segundos.
 - El oxigeno inicia en 100, pierde 2 puntos cada 5 segundos y baja al recibir proyectiles enemigos.
 - El arrecife inicia con 1300 HP y no se regenera entre rondas.
-- El arrecife usa las 5 etapas de `reef.png`, divididas en tramos de 260 HP. Su barra de vida se muestra solamente en el HUD superior.
+- El arrecife usa la imagen completa `reef.png`, sin etapas de destruccion. Su barra de vida se muestra solamente en el HUD superior.
 - Las barreras usan las 6 etapas de destruccion incluidas en `wall.png`, conservando la proporcion original del sprite.
 - Hay 4 barreras en la ronda 1, 3 en la ronda 2 y 2 en las rondas 3 y 4.
 - Las rondas 1 a 3 muestran cangrejos en la primera fila, calamares en la segunda y medusas en la tercera.
 - Cangrejos, calamares y medusas usan animaciones de movimiento de 4 cuadros y animaciones `Dead` de 4 cuadros al ser eliminados.
 - Los enemigos normales recibieron un segundo aumento de 25% en su tamaño.
-- La ronda 4 enfrenta al Pulpo Leviatan con dos fases de disparo, movimiento libre y barra de vida visible.
+- La ronda 4 enfrenta al Pez Globo, que se mueve libremente y dispara tres triangulos rojos por rafaga.
+- El submarino, sus torpedos, el jefe y los power-ups utilizan sus imagenes PNG correspondientes.
+- El submarino reproduce su animacion `Dead` cuando se agota el oxigeno.
 - La bandera roja marca el limite de invasion: pierdes cuando un enemigo la cruza.
 - Los enemigos pueden soltar power-ups con colores distintos y las burbujas restauran oxigeno cada 15 segundos.
 - El power-up de velocidad aumenta el movimiento del submarino en 25%.

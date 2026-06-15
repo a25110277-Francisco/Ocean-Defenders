@@ -184,7 +184,7 @@ Los power-ups caen desde donde murió el enemigo y el jugador debe recogerlos mo
 
 **Nota importante:** El arrecife mantiene el daño acumulado de todas las rondas anteriores. 
 
-El arrecife utiliza las 6 etapas de destruccion incluidas en `reef.png`. La barra de vida se muestra unicamente en el HUD superior.
+El arrecife utiliza las 5 etapas de destruccion incluidas en `reef.png`, una por cada tramo de 260 puntos de vida. La barra de vida se muestra unicamente en el HUD superior.
 
 ## **CONDICIONES DE VICTORIA Y DERROTA** 
 

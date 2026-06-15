@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <algorithm>
+#include <array>
 #include "componentes/Posicion.hpp"
 #include "componentes/Vida.hpp"
 #include "core/EstadoJuego.hpp"
@@ -58,25 +59,30 @@ public:
         }
 
         if (textura != nullptr) {
-            const sf::Vector2u texturaTamano = textura->getSize();
             constexpr int CantidadEtapas = 6;
+            constexpr std::array<sf::IntRect, CantidadEtapas> Recortes{{
+                sf::IntRect({23, 259}, {384, 204}),
+                sf::IntRect({434, 254}, {309, 212}),
+                sf::IntRect({776, 264}, {308, 209}),
+                sf::IntRect({1144, 282}, {290, 193}),
+                sf::IntRect({1497, 363}, {277, 112}),
+                sf::IntRect({1888, 407}, {213, 68})
+            }};
             const int impactosRecibidos = (vida.ObtenerMaxima() - vida.ObtenerActual()) / 5;
             const int etapa = std::clamp(impactosRecibidos, 0, CantidadEtapas - 1);
-            const int inicioX = etapa * static_cast<int>(texturaTamano.x) / CantidadEtapas;
-            const int finX = (etapa + 1) * static_cast<int>(texturaTamano.x) / CantidadEtapas;
-            const int recorteY = static_cast<int>(static_cast<float>(texturaTamano.y) * 0.29f);
-            const int recorteAlto = static_cast<int>(static_cast<float>(texturaTamano.y) * 0.42f);
-            const sf::IntRect recorte(
-                {inicioX, recorteY},
-                {finX - inicioX, recorteAlto}
-            );
+            const sf::IntRect& recorte = Recortes[etapa];
+            const float escala = tamano.x / static_cast<float>(Recortes[0].size.x);
+            const sf::Vector2f tamanoSprite{
+                static_cast<float>(recorte.size.x) * escala,
+                static_cast<float>(recorte.size.y) * escala
+            };
 
             sf::Sprite sprite(*textura, recorte);
-            sprite.setPosition(posicion.ObtenerVector());
-            sprite.setScale({
-                tamano.x / static_cast<float>(recorte.size.x),
-                tamano.y / static_cast<float>(recorte.size.y)
+            sprite.setPosition({
+                posicion.x + (tamano.x - tamanoSprite.x) * 0.5f,
+                posicion.y + tamano.y - tamanoSprite.y
             });
+            sprite.setScale({escala, escala});
             ventana.draw(sprite);
             return;
         }
@@ -109,5 +115,5 @@ private:
     Vida vida;
     Posicion posicion;
     EstadoBarrera estadoBarrera;
-    sf::Vector2f tamano{120.0f, 100.0f};
+    sf::Vector2f tamano{120.0f, 70.0f};
 };

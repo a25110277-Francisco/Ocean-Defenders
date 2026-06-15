@@ -33,27 +33,26 @@ public:
         }
 
         if (textura != nullptr) {
-            constexpr int CantidadEtapas = 6;
+            constexpr int CantidadEtapas = 5;
             const sf::Vector2u texturaTamano = textura->getSize();
+            const int danoAcumulado = vida.ObtenerMaxima() - vida.ObtenerActual();
             const int etapa = std::clamp(
-                CantidadEtapas - static_cast<int>(vida.ObtenerPorcentaje() * CantidadEtapas + 0.99f),
+                danoAcumulado * CantidadEtapas / vida.ObtenerMaxima(),
                 0,
                 CantidadEtapas - 1
             );
-            const int inicioY = etapa * static_cast<int>(texturaTamano.y) / CantidadEtapas;
-            const int finY = (etapa + 1) * static_cast<int>(texturaTamano.y) / CantidadEtapas;
-            const float altoVisual = 88.0f;
+            const int altoCuadro = static_cast<int>(texturaTamano.y) / CantidadEtapas;
+            const int inicioY = etapa * altoCuadro;
+            const float escala = tamano.x / static_cast<float>(texturaTamano.x);
+            const float altoVisual = static_cast<float>(altoCuadro) * escala;
             const float posicionVisualY = posicion.y + tamano.y - altoVisual;
             const sf::IntRect recorte(
                 {0, inicioY},
-                {static_cast<int>(texturaTamano.x), finY - inicioY}
+                {static_cast<int>(texturaTamano.x), altoCuadro}
             );
             sf::Sprite sprite(*textura, recorte);
             sprite.setPosition({posicion.x, posicionVisualY});
-            sprite.setScale({
-                tamano.x / static_cast<float>(recorte.size.x),
-                altoVisual / static_cast<float>(recorte.size.y)
-            });
+            sprite.setScale({escala, escala});
             ventana.draw(sprite);
             return;
         }

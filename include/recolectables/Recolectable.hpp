@@ -32,8 +32,8 @@ public:
         if (textura != nullptr) {
             const sf::Vector2u texturaTamano = textura->getSize();
             const float escala = std::min(
-                32.0f / static_cast<float>(texturaTamano.x),
-                32.0f / static_cast<float>(texturaTamano.y)
+                56.0f / static_cast<float>(texturaTamano.x),
+                56.0f / static_cast<float>(texturaTamano.y)
             );
             const sf::Vector2f tamanoVisual{
                 static_cast<float>(texturaTamano.x) * escala,

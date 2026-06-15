@@ -107,7 +107,7 @@ public:
     void Dibujar(sf::RenderWindow& ventana, const sf::Texture* textura = nullptr) const {
         if (textura != nullptr) {
             const sf::Vector2u texturaTamano = textura->getSize();
-            const sf::Vector2f tamanoVisual{66.0f, 80.0f};
+            const sf::Vector2f tamanoVisual{99.0f, 120.0f};
             sf::Sprite sprite(*textura);
             sprite.setPosition({
                 posicion.x + (tamano.x - tamanoVisual.x) * 0.5f,

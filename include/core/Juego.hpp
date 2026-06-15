@@ -710,7 +710,7 @@ private:
             {finX - inicioX, static_cast<int>(texturaTamano.y)}
         );
         const Posicion& posicion = submarino.ObtenerPosicion();
-        const sf::Vector2f tamanoVisual{66.0f, 80.0f};
+        const sf::Vector2f tamanoVisual{99.0f, 120.0f};
         sf::Sprite sprite(texturaSubmarinoMuerto, recorte);
         sprite.setPosition({
             posicion.x + (54.0f - tamanoVisual.x) * 0.5f,

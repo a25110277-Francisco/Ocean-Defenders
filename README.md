@@ -4,6 +4,27 @@ Juego estilo Space Invaders submarino hecho en C++ con SFML 3. El jugador contro
 
 Al abrir el ejecutable se muestra una portada. Al presionar Enter aparecen las indicaciones y una cuenta de 7 segundos antes de iniciar la partida.
 
+## Objetivo del juego
+
+El objetivo de Ocean Defenders es proteger el arrecife durante cuatro rondas de ataque enemigo. El jugador debe controlar el submarino, destruir las formaciones de cangrejos, calamares y medusas, evitar que crucen el limite de invasion y conservar suficiente oxigeno para llegar a la ronda final. La victoria se consigue al derrotar al Pez Globo, jefe de la cuarta ronda.
+
+El jugador pierde si el oxigeno del submarino llega a 0, si el arrecife se queda sin vida o si algun enemigo alcanza el limite marcado en la pantalla.
+
+## Caracteristicas
+
+- Juego 2D estilo Space Invaders con tematica submarina.
+- Programacion orientada a objetos con clases inline en archivos `.hpp`.
+- Graficos con SFML 3.0 usando sprites, rectangulos, circulos y triangulos.
+- Portada inicial, pantalla de indicaciones y contador antes de comenzar.
+- Cuatro rondas progresivas con distinta cantidad de enemigos, barreras y velocidad.
+- Submarino con movimiento horizontal, disparo de torpedos y sistema de oxigeno.
+- Barreras de coral regeneradas por ronda, con sprites de destruccion por dano.
+- Arrecife con 1000 HP persistentes durante toda la partida.
+- Power-ups de doble disparo, velocidad aumentada y recuperacion de oxigeno.
+- Jefe final Pez Globo con movimiento libre, barra de vida y rafagas de 3 proyectiles.
+- Musica de fondo, sonidos de disparo, victoria y derrota.
+- Fondo, portada, enemigos, submarino, torpedos, power-ups, barreras y arrecife con imagenes PNG.
+
 ## Controles
 
 - A/D o flechas izquierda/derecha: mover el submarino.

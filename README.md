@@ -61,17 +61,38 @@ El ejecutable principal se genera como `bin/OceanDefenders.exe`.
 - El power-up de velocidad aumenta el movimiento del submarino en 25%.
 - La vista mantiene proporcion al redimensionar o usar pantalla completa para evitar que se estire.
 
+## Caracteristicas
+
+- Juego 2D estilo Space Invaders con tematica submarina.
+- Programacion orientada a objetos con clases inline en archivos `.hpp`.
+- Graficos con SFML 3.0 usando sprites, rectangulos, circulos y triangulos.
+- Portada inicial, pantalla de indicaciones y contador antes de comenzar.
+- Cuatro rondas progresivas con distinta cantidad de enemigos, barreras y velocidad.
+- Submarino con movimiento horizontal, disparo de torpedos y sistema de oxigeno.
+- Barreras de coral regeneradas por ronda, con sprites de destruccion por dano.
+- Arrecife con 1000 HP persistentes durante toda la partida.
+- Power-ups de doble disparo, velocidad aumentada y recuperacion de oxigeno.
+- Jefe final Pez Globo con movimiento libre, barra de vida y rafagas de 3 proyectiles.
+- Musica de fondo, sonidos de disparo, victoria y derrota.
+- Fondo, portada, enemigos, submarino, torpedos, power-ups, barreras y arrecife con imagenes PNG.
+
+## Equipo
+
+- Lider: Francisco Yael Partida Garduño (@a25110277-Francisco)
+
 ## Tecnologia
 
 - Lenguaje: C++17.
 - Libreria grafica: SFML 3.0.
 - Estructura: clases inline en headers dentro de `include`.
+
+## Creditos
+
+- Inspiración principal: Space Invaders
+- Fuente de respaldo: Noto Sans, distribuida bajo SIL Open Font License.
 - Visuales: primitivas SFML e imagenes PNG para las barreras.
 - Fuente principal: Pixel Digivolve, cargada desde `assets/fonts/PIXEL LETTER`.
 - Musica principal: `assets/music/principal.ogg`, reproducida en bucle durante la partida.
 - Fondo principal: `assets/stage/ocean.png`, recortado proporcionalmente sin deformarse.
 - Efectos de audio: `shotSound.ogg`, `gameOver.ogg` y `victory.ogg`.
-
-## Creditos
-
-- Fuente de respaldo: Noto Sans, distribuida bajo SIL Open Font License.
+- Agradecimientos: A mis perritos bombom, junior y peluchin, y a mi profe

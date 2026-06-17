@@ -231,7 +231,7 @@ private:
     static constexpr float LimiteInvasionY = 595.0f;
     static constexpr float DuracionMuerte = 0.8f;
     static constexpr float DuracionPausaRonda = 3.0f;
-    static constexpr float DuracionInicioJuego = 3.0f;
+    static constexpr float DuracionInicioJuego = 7.0f;
 
     struct EfectoMuerte {
         std::string nombre;

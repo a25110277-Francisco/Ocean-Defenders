@@ -2,7 +2,7 @@
 
 Juego estilo Space Invaders submarino hecho en C++ con SFML 3. El jugador controla un submarino, protege el arrecife y derrota cuatro rondas de enemigos usando torpedos, barreras de coral, burbujas de oxigeno y power-ups.
 
-Al abrir el ejecutable se muestra una pantalla de titulo con el escenario congelado. La partida inicia al presionar Enter.
+Al abrir el ejecutable se muestra una portada. Al presionar Enter aparecen las indicaciones y una cuenta de 3 segundos antes de iniciar la partida.
 
 ## Controles
 

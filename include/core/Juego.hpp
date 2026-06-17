@@ -60,8 +60,10 @@ public:
         tiempoAnimacionEnemigos = 0.0f;
         tiempoMuerteSubmarino = 0.0f;
         tiempoPausaRonda = 0.0f;
+        tiempoInicioJuego = 0.0f;
         submarinoEnMuerte = false;
         enPausaEntreRondas = false;
+        mostrandoIndicaciones = false;
         musicaPrincipal.stop();
         if (sonidoGameOver) {
             sonidoGameOver->stop();
@@ -88,7 +90,9 @@ public:
 
             const float delta = std::min(reloj.restart().asSeconds(), 0.05f);
             ActualizarMuerteSubmarino(delta);
-            if (estadoJuego.EstaJugando() && !mostrandoTitulo) {
+            if (estadoJuego.EstaJugando() && mostrandoIndicaciones) {
+                ActualizarIndicacionesInicio(delta);
+            } else if (estadoJuego.EstaJugando() && !mostrandoTitulo) {
                 Actualizar(delta);
             }
 
@@ -152,7 +156,9 @@ public:
             recolectable->Dibujar(ventana, ObtenerTexturaRecolectable(*recolectable));
         }
 
-        if (enPausaEntreRondas) {
+        if (mostrandoIndicaciones) {
+            DibujarIndicacionesInicio();
+        } else if (enPausaEntreRondas) {
             DibujarPausaEntreRondas();
         } else if (mostrandoTitulo) {
             DibujarPantallaTitulo();
@@ -225,6 +231,7 @@ private:
     static constexpr float LimiteInvasionY = 595.0f;
     static constexpr float DuracionMuerte = 0.8f;
     static constexpr float DuracionPausaRonda = 3.0f;
+    static constexpr float DuracionInicioJuego = 3.0f;
 
     struct EfectoMuerte {
         std::string nombre;
@@ -251,6 +258,7 @@ private:
         texturaBarreraCargada = texturaBarrera.loadFromFile("assets/stage/wall.png");
         texturaArrecifeCargada = texturaArrecife.loadFromFile("assets/stage/reef.png");
         texturaFondoCargada = texturaFondo.loadFromFile("assets/stage/ocean.png");
+        texturaPortadaCargada = texturaPortada.loadFromFile("assets/stage/portada.png");
         if (texturaBarreraCargada) {
             texturaBarrera.setSmooth(false);
         }
@@ -259,6 +267,9 @@ private:
         }
         if (texturaFondoCargada) {
             texturaFondo.setSmooth(false);
+        }
+        if (texturaPortadaCargada) {
+            texturaPortada.setSmooth(false);
         }
 
         texturasEnemigosCargadas =
@@ -433,9 +444,8 @@ private:
                 }
                 if (mostrandoTitulo && tecla->code == sf::Keyboard::Key::Enter) {
                     mostrandoTitulo = false;
-                    if (musicaPrincipalCargada) {
-                        musicaPrincipal.play();
-                    }
+                    mostrandoIndicaciones = true;
+                    tiempoInicioJuego = 0.0f;
                 } else if (estadoJuego.Termino() && tecla->code == sf::Keyboard::Key::Enter) {
                     Iniciar();
                 }
@@ -659,6 +669,16 @@ private:
         }
     }
 
+    void ActualizarIndicacionesInicio(float delta) {
+        tiempoInicioJuego += delta;
+        if (tiempoInicioJuego >= DuracionInicioJuego) {
+            mostrandoIndicaciones = false;
+            if (musicaPrincipalCargada) {
+                musicaPrincipal.play();
+            }
+        }
+    }
+
     void IniciarPausaEntreRondas() {
         enPausaEntreRondas = true;
         tiempoPausaRonda = 0.0f;
@@ -862,23 +882,7 @@ private:
 
     void DibujarFondo() {
         if (texturaFondoCargada) {
-            const sf::Vector2u tamanoTextura = texturaFondo.getSize();
-            const float proporcionJuego = static_cast<float>(AnchoVentana) / static_cast<float>(AltoVentana);
-            const int anchoRecorte = std::min(
-                static_cast<int>(tamanoTextura.x),
-                static_cast<int>(static_cast<float>(tamanoTextura.y) * proporcionJuego)
-            );
-            const int inicioX = (static_cast<int>(tamanoTextura.x) - anchoRecorte) / 2;
-            const sf::IntRect recorte(
-                {inicioX, 0},
-                {anchoRecorte, static_cast<int>(tamanoTextura.y)}
-            );
-            sf::Sprite fondo(texturaFondo, recorte);
-            fondo.setScale({
-                static_cast<float>(AnchoVentana) / static_cast<float>(anchoRecorte),
-                static_cast<float>(AltoVentana) / static_cast<float>(tamanoTextura.y)
-            });
-            ventana.draw(fondo);
+            DibujarTexturaCubriendo(texturaFondo);
         } else {
             sf::RectangleShape zonaJuego({static_cast<float>(AnchoVentana), static_cast<float>(AltoVentana)});
             zonaJuego.setPosition({0.0f, 0.0f});
@@ -899,6 +903,30 @@ private:
         }
 
         DibujarBanderaLimite();
+    }
+
+    void DibujarTexturaCubriendo(const sf::Texture& textura) {
+        const sf::Vector2u tamanoTextura = textura.getSize();
+        const float proporcionJuego = static_cast<float>(AnchoVentana) / static_cast<float>(AltoVentana);
+        const float proporcionTextura = static_cast<float>(tamanoTextura.x) / static_cast<float>(tamanoTextura.y);
+
+        sf::IntRect recorte;
+        if (proporcionTextura > proporcionJuego) {
+            const int anchoRecorte = static_cast<int>(static_cast<float>(tamanoTextura.y) * proporcionJuego);
+            const int inicioX = (static_cast<int>(tamanoTextura.x) - anchoRecorte) / 2;
+            recorte = sf::IntRect({inicioX, 0}, {anchoRecorte, static_cast<int>(tamanoTextura.y)});
+        } else {
+            const int altoRecorte = static_cast<int>(static_cast<float>(tamanoTextura.x) / proporcionJuego);
+            const int inicioY = (static_cast<int>(tamanoTextura.y) - altoRecorte) / 2;
+            recorte = sf::IntRect({0, inicioY}, {static_cast<int>(tamanoTextura.x), altoRecorte});
+        }
+
+        sf::Sprite sprite(textura, recorte);
+        sprite.setScale({
+            static_cast<float>(AnchoVentana) / static_cast<float>(recorte.size.x),
+            static_cast<float>(AltoVentana) / static_cast<float>(recorte.size.y)
+        });
+        ventana.draw(sprite);
     }
 
     void DibujarHud() {
@@ -1008,7 +1036,29 @@ private:
         DibujarTextoCentrado(std::to_string(segundosRestantes), centroX, 345.0f, 42, sf::Color(130, 235, 255));
     }
 
+    void DibujarIndicacionesInicio() {
+        sf::RectangleShape capa({static_cast<float>(AnchoVentana), static_cast<float>(AltoVentana)});
+        capa.setPosition({0.0f, 0.0f});
+        capa.setFillColor(sf::Color(0, 0, 0, 170));
+        ventana.draw(capa);
+
+        const int segundosRestantes = std::max(1, static_cast<int>(std::ceil(DuracionInicioJuego - tiempoInicioJuego)));
+        const float centroX = static_cast<float>(AnchoVentana) * 0.5f;
+        DibujarTextoCentrado("COMO JUGAR", centroX, 180.0f, 34, sf::Color(130, 235, 255));
+        DibujarTextoCentrado("A / D O FLECHAS: MOVER SUBMARINO", centroX, 245.0f, 20, sf::Color(245, 250, 255));
+        DibujarTextoCentrado("ESPACIO: DISPARAR TORPEDOS", centroX, 285.0f, 20, sf::Color(245, 250, 255));
+        DibujarTextoCentrado("RECOLECTA POWER UPS Y OXIGENO", centroX, 325.0f, 20, sf::Color(245, 250, 255));
+        DibujarTextoCentrado("PROTEGE EL ARRECIFE Y EVITA QUE CRUCEN EL LIMITE", centroX, 365.0f, 18, sf::Color(245, 250, 255));
+        DibujarTextoCentrado("INICIANDO EN", centroX, 440.0f, 20, sf::Color(180, 230, 255));
+        DibujarTextoCentrado(std::to_string(segundosRestantes), centroX, 480.0f, 44, sf::Color(255, 230, 120));
+    }
+
     void DibujarPantallaTitulo() {
+        if (texturaPortadaCargada) {
+            DibujarTexturaCubriendo(texturaPortada);
+            return;
+        }
+
         sf::RectangleShape capa({static_cast<float>(AnchoVentana), static_cast<float>(AltoVentana)});
         capa.setPosition({0.0f, 0.0f});
         capa.setFillColor(sf::Color(0, 0, 0, 145));
@@ -1025,6 +1075,7 @@ private:
     sf::Texture texturaBarrera;
     sf::Texture texturaArrecife;
     sf::Texture texturaFondo;
+    sf::Texture texturaPortada;
     sf::Texture texturaCangrejo;
     sf::Texture texturaCangrejoMuerto;
     sf::Texture texturaCalamar;
@@ -1050,6 +1101,7 @@ private:
     bool texturaBarreraCargada{false};
     bool texturaArrecifeCargada{false};
     bool texturaFondoCargada{false};
+    bool texturaPortadaCargada{false};
     bool texturasEnemigosCargadas{false};
     bool texturasHeroeCargadas{false};
     bool texturasPowerUpsCargadas{false};
@@ -1075,11 +1127,13 @@ private:
     bool mostrandoTitulo{true};
     bool submarinoEnMuerte{false};
     bool enPausaEntreRondas{false};
+    bool mostrandoIndicaciones{false};
     float direccionFormacion{1.0f};
     float temporizadorBurbuja{0.0f};
     float temporizadorPowerUpJefe{0.0f};
     float tiempoAnimacionEnemigos{0.0f};
     float tiempoMuerteSubmarino{0.0f};
     float tiempoPausaRonda{0.0f};
+    float tiempoInicioJuego{0.0f};
     static constexpr float DuracionMuerteSubmarino = 1.2f;
 };

@@ -10,7 +10,7 @@ class Submarino;
 class ProyectilEnemigo : public Proyectil {
 public:
     ProyectilEnemigo(DanoVida danoArrecifeInicial, DanoOxigeno danoOxigenoInicial, Posicion posicionInicial, Velocidad velocidadInicial, sf::Color colorInicial)
-        : Proyectil(danoArrecifeInicial, posicionInicial, velocidadInicial, {8.0f, 16.0f}, colorInicial), danoOxigeno(danoOxigenoInicial) {}
+        : Proyectil(danoArrecifeInicial, posicionInicial, velocidadInicial, {10.4f, 20.8f}, colorInicial), danoOxigeno(danoOxigenoInicial) {}
 
     int ObtenerDanoOxigeno() const {
         return danoOxigeno.ObtenerCantidad();

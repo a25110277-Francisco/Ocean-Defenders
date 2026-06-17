@@ -6,7 +6,7 @@ class ProyectilJefe : public ProyectilEnemigo {
 public:
     ProyectilJefe(Posicion posicionInicial, Velocidad velocidadInicial = Velocidad(0.0f, 330.0f))
         : ProyectilEnemigo(DanoVida(20), DanoOxigeno(25), posicionInicial, velocidadInicial, sf::Color::Red) {
-        tamano = {14.0f, 16.0f};
+        tamano = {18.2f, 20.8f};
     }
 
     void Dibujar(sf::RenderWindow& ventana) const override {
